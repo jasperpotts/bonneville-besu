@@ -18,7 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
+import java.math.BigInteger;
 
 /** The XOR operation. */
 public class XorOperation extends AbstractFixedCostOperation {
@@ -48,12 +48,12 @@ public class XorOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value0 = frame.popStackItem();
-    final Bytes value1 = frame.popStackItem();
-
-    final Bytes result = value0.xor(value1);
-
-    frame.pushStackItem(result);
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger value1 = stack.popUnsafe();
+    final BigInteger result = value0.xor(value1);
+    stack.pushUnsafe(result);
 
     return xorSuccess;
   }

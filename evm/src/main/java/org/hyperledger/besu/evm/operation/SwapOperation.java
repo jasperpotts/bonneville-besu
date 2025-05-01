@@ -19,7 +19,7 @@ import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
+import java.math.BigInteger;
 
 /** The Swap operation. */
 public class SwapOperation extends AbstractFixedCostOperation {
@@ -66,7 +66,7 @@ public class SwapOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame, final int index) {
-    final Bytes tmp = frame.getStackItem(0);
+    final BigInteger tmp = frame.getStackItemBigInteger(0);
     frame.setStackItem(0, frame.getStackItem(index));
     frame.setStackItem(index, tmp);
 
