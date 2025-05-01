@@ -66,9 +66,12 @@ public class SwapOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame, final int index) {
-    final BigInteger tmp = frame.getStackItemBigInteger(0);
-    frame.setStackItem(0, frame.getStackItem(index));
-    frame.setStackItem(index, tmp);
+    final var stack = frame.stack();
+    stack.checkStackForPop(index - 1);
+
+    final BigInteger tmp = stack.peekUnsafe();
+    stack.setUnsafe(0, stack.peekUnsafe(index));
+    stack.setUnsafe(index, tmp);
 
     return swapSuccess;
   }

@@ -133,6 +133,24 @@ public class FlexStack<T> {
   }
 
   /**
+   * Peek and return type T.
+   *
+   * @return the T entry
+   */
+  public T peekUnsafe() {
+      return entries[top];
+  }
+
+  /**
+   * Peek and return type T.
+   *
+   * @return the T entry
+   */
+  public T peekUnsafe(final int offset) {
+    return entries[top - offset];
+  }
+
+  /**
    * Pops the specified number of operands from the stack.
    *
    * @param items the number of operands to pop off the stack
@@ -226,6 +244,16 @@ public class FlexStack<T> {
       throw new OverflowException();
     }
 
+    entries[top - offset] = operand;
+  }
+
+  /**
+   * Set operand.
+   *
+   * @param offset the offset
+   * @param operand the operand
+   */
+  public void setUnsafe(final int offset, final T operand) {
     entries[top - offset] = operand;
   }
 
