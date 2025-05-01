@@ -22,6 +22,8 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import org.apache.tuweni.bytes.Bytes;
 
+import java.math.BigInteger;
+
 /** The Jump operation. */
 public class JumpOperation extends AbstractFixedCostOperation {
 
@@ -51,13 +53,10 @@ public class JumpOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final int jumpDestination;
-    final Bytes bytes = frame.popStackItem().trimLeadingZeros();
-    try {
-      jumpDestination = bytes.toInt();
-    } catch (final RuntimeException iae) {
-      return invalidJumpResponse;
-    }
+    final var stack = frame.stack();
+    stack.checkStackForPop(1);
+    final int jumpDestination = stack.popUnsafe().intValue();
+
     final Code code = frame.getCode();
     if (code.isJumpDestInvalid(jumpDestination)) {
       return invalidJumpResponse;

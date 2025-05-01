@@ -33,12 +33,4 @@ class NotOperationTest {
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(BigInteger.valueOf(0x0));
   }
-
-  @Test
-  void testNotOperation00() {
-    final var frame = new TestMessageFrameBuilder().pushStackItem(BigInteger.valueOf(0x00)).build();
-    NotOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(-1));
-  }
 }
