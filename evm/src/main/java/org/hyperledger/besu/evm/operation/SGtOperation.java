@@ -20,8 +20,6 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
 
-import org.apache.tuweni.bytes.Bytes;
-
 /** The SGt operation. */
 public class SGtOperation extends AbstractFixedCostOperation {
 
@@ -50,21 +48,15 @@ public class SGtOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value0 = frame.popStackItem();
-    final Bytes value1 = frame.popStackItem();
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
 
-    final BigInteger b0 =
-        value0.size() < 32
-            ? new BigInteger(1, value0.toArrayUnsafe())
-            : new BigInteger(value0.toArrayUnsafe());
-    final BigInteger b1 =
-        value1.size() < 32
-            ? new BigInteger(1, value1.toArrayUnsafe())
-            : new BigInteger(value1.toArrayUnsafe());
+    final BigInteger value0 = stack.popUnsafeSigned();
+    final BigInteger value1 = stack.popUnsafeSigned();
 
-    final Bytes result = b0.compareTo(b1) > 0 ? BYTES_ONE : Bytes.EMPTY;
+    final BigInteger result = (value0.compareTo(value1) > 0 ? BigInteger.ONE : BigInteger.ZERO);
 
-    frame.pushStackItem(result);
+    stack.pushUnsafe(result);
 
     return sgtSuccess;
   }

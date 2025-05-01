@@ -18,8 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
-import org.apache.tuweni.units.bigints.UInt256;
+import java.math.BigInteger;
 
 /** The Eq operation. */
 public class EqOperation extends AbstractFixedCostOperation {
@@ -49,12 +48,14 @@ public class EqOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value0 = frame.popStackItem().trimLeadingZeros();
-    final Bytes value1 = frame.popStackItem().trimLeadingZeros();
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
 
-    final Bytes result = (value0.equals(value1) ? UInt256.ONE : UInt256.ZERO);
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger value1 = stack.popUnsafe();
 
-    frame.pushStackItem(result);
+    final BigInteger result = value0.equals(value1) ? BigInteger.ONE : BigInteger.ZERO;
+    stack.pushUnsafe(result);
 
     return eqSuccess;
   }

@@ -18,7 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
+import java.math.BigInteger;
 
 /** The LT operation. */
 public class LtOperation extends AbstractFixedCostOperation {
@@ -48,12 +48,14 @@ public class LtOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value0 = frame.popStackItem().trimLeadingZeros();
-    final Bytes value1 = frame.popStackItem().trimLeadingZeros();
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
 
-    final Bytes result = value0.compareTo(value1) < 0 ? BYTES_ONE : Bytes.EMPTY;
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger value1 = stack.popUnsafe();
 
-    frame.pushStackItem(result);
+    final BigInteger result = value0.compareTo(value1) < 0 ? BigInteger.ONE : BigInteger.ZERO;
+    stack.pushUnsafe(result);
 
     return ltSuccess;
   }
