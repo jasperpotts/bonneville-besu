@@ -51,21 +51,12 @@ public class SubOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final BigInteger value0 = new BigInteger(1, frame.popStackItem().toArrayUnsafe());
-    final BigInteger value1 = new BigInteger(1, frame.popStackItem().toArrayUnsafe());
-
-    final BigInteger result = value0.subtract(value1);
-
-    byte[] resultArray = result.toByteArray();
-    int length = resultArray.length;
-    if (length >= 32) {
-      frame.pushStackItem(Bytes.wrap(resultArray, length - 32, 32));
-    } else if (result.signum() < 0) {
-      frame.pushStackItem(Bytes32.leftPad(Bytes.wrap(resultArray), (byte) -1));
-    } else {
-      frame.pushStackItem(Bytes.wrap(resultArray));
-    }
-
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger value1 = stack.popUnsafe();
+    final BigInteger result = value0.subtract(value1).and(MASK_256_BITS);
+    stack.pushUnsafe(result);
     return subSuccess;
   }
 }
