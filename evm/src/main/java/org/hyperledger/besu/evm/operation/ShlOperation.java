@@ -14,16 +14,16 @@
  */
 package org.hyperledger.besu.evm.operation;
 
-import static org.apache.tuweni.bytes.Bytes32.leftPad;
-
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
+import java.math.BigInteger;
 
 /** The Shl (Shift Left) operation. */
 public class ShlOperation extends AbstractFixedCostOperation {
+  private static final BigInteger SHIFT_OFF = BigInteger.ONE.shiftLeft(8);
+  private static final BigInteger OVERFLOW_SHIFT_SIZE = BigInteger.ONE.shiftLeft(32);
 
   /** The Shl operation success result. */
   static final OperationResult shlSuccess = new OperationResult(3, null);
@@ -50,18 +50,36 @@ public class ShlOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    Bytes shiftAmount = frame.popStackItem();
-    if (shiftAmount.size() > 4 && (shiftAmount = shiftAmount.trimLeadingZeros()).size() > 4) {
-      frame.popStackItem();
-      frame.pushStackItem(Bytes.EMPTY);
-    } else {
-      final int shiftAmountInt = shiftAmount.toInt();
-      final Bytes value = leftPad(frame.popStackItem());
+    // BEFORE
+    //    Bytes shiftAmount = frame.popStackItem();
+    //    if (shiftAmount.size() > 4 && (shiftAmount = shiftAmount.trimLeadingZeros()).size() > 4) {
+    //      frame.popStackItem();
+    //      frame.pushStackItem(Bytes.EMPTY);
+    //    } else {
+    //      final int shiftAmountInt = shiftAmount.toInt();
+    //      final Bytes value = leftPad(frame.popStackItem());
+    //
+    //      if (shiftAmountInt >= 256 || shiftAmountInt < 0) {
+    //        frame.pushStackItem(Bytes.EMPTY);
+    //      } else {
+    //        frame.pushStackItem(value.shiftLeft(shiftAmountInt));
+    //      }
+    //    }
 
-      if (shiftAmountInt >= 256 || shiftAmountInt < 0) {
-        frame.pushStackItem(Bytes.EMPTY);
+    // AFTER
+    final var stack = frame.stack();
+    stack.checkStackForPop(1);
+    final var shiftSize = stack.popUnsafe();
+    if (shiftSize.compareTo(OVERFLOW_SHIFT_SIZE) >= 0) {
+      stack.checkStackForPop(1);
+      stack.popUnsafe();
+      stack.pushUnsafe(BigInteger.ZERO);
+    } else {
+      final var shifted = stack.popUnsafe();
+      if (shiftSize.compareTo(SHIFT_OFF) >= 0 || shiftSize.compareTo(BigInteger.ZERO) < 0) {
+        stack.pushUnsafe(BigInteger.ZERO);
       } else {
-        frame.pushStackItem(value.shiftLeft(shiftAmountInt));
+        stack.pushUnsafe(shifted.shiftLeft(shiftSize.intValueExact()).and(MASK_256_BITS));
       }
     }
     return shlSuccess;
