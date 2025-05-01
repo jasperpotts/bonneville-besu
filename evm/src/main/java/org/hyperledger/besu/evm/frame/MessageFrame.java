@@ -17,8 +17,6 @@ package org.hyperledger.besu.evm.frame;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Collections.emptySet;
 
-import java.math.BigInteger;
-import java.util.Arrays;
 import org.hyperledger.besu.collections.trie.BytesTrieSet;
 import org.hyperledger.besu.collections.undo.UndoSet;
 import org.hyperledger.besu.collections.undo.UndoTable;
@@ -37,8 +35,10 @@ import org.hyperledger.besu.evm.log.Log;
 import org.hyperledger.besu.evm.operation.Operation;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -593,8 +593,8 @@ public class MessageFrame {
   }
 
   /**
-   * Converts a BigInteger back to a Bytes object of the specified length,
-   * preserving the exact byte content without sign extension.
+   * Converts a BigInteger back to a Bytes object of the specified length, preserving the exact byte
+   * content without sign extension.
    *
    * @param bigInt The BigInteger to convert.
    * @return A Bytes object containing the unsigned value.

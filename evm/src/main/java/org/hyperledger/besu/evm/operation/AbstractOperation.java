@@ -14,8 +14,9 @@
  */
 package org.hyperledger.besu.evm.operation;
 
-import java.math.BigInteger;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+
+import java.math.BigInteger;
 
 import org.apache.tuweni.bytes.Bytes;
 

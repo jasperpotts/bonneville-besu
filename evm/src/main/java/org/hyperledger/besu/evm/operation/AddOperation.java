@@ -20,8 +20,6 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
 
-import org.apache.tuweni.bytes.Bytes;
-
 /** The Add operation. */
 public class AddOperation extends AbstractFixedCostOperation {
 

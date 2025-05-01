@@ -20,6 +20,10 @@ import java.math.BigInteger;
 
 /** The Operand stack. */
 public class OperandStack extends FlexStack<BigInteger> {
+
+  private static final BigInteger twoToThe256 = BigInteger.ONE.shiftLeft(256); // 2^256
+  private static final BigInteger twoToThe255 = BigInteger.ONE.shiftLeft(255); // 2^255
+
   /**
    * Instantiates a new Operand stack.
    *
@@ -27,5 +31,20 @@ public class OperandStack extends FlexStack<BigInteger> {
    */
   public OperandStack(final int maxSize) {
     super(maxSize, BigInteger.class);
+  }
+
+  /**
+   * Pop operand as signed BigInteger. This method does not check for underflow and should only be
+   * used when the caller is sure that the stack is not empty.
+   *
+   * @return the operand as signed BigInteger
+   */
+  public final BigInteger popUnsafeSigned() {
+    final BigInteger unsigned = popUnsafe();
+    if (unsigned.compareTo(twoToThe255) >= 0) {
+      return unsigned.subtract(twoToThe256);
+    } else {
+      return unsigned;
+    }
   }
 }

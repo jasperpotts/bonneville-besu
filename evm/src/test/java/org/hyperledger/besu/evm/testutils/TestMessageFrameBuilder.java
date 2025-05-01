@@ -16,7 +16,6 @@ package org.hyperledger.besu.evm.testutils;
 
 import static org.hyperledger.besu.evm.frame.MessageFrame.DEFAULT_MAX_STACK_SIZE;
 
-import java.math.BigInteger;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Hash;
 import org.hyperledger.besu.datatypes.Wei;
@@ -28,6 +27,7 @@ import org.hyperledger.besu.evm.internal.Words;
 import org.hyperledger.besu.evm.toy.ToyWorld;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,10 +172,11 @@ public class TestMessageFrameBuilder {
             .build();
     frame.setPC(pc);
     frame.setSection(section);
-    stackItems.forEach(item -> {
-      if (item instanceof Bytes) frame.pushStackItem((Bytes) item);
-      else frame.stack().pushUnsafe((BigInteger) item);
-    });
+    stackItems.forEach(
+        item -> {
+          if (item instanceof Bytes) frame.pushStackItem((Bytes) item);
+          else frame.stack().pushUnsafe((BigInteger) item);
+        });
     frame.writeMemory(0, memory.size(), memory);
     return frame;
   }
