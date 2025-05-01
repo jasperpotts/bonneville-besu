@@ -17,6 +17,7 @@ package org.hyperledger.besu.evm.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.math.BigInteger;
 import org.apache.tuweni.bytes.Bytes;
 import org.apache.tuweni.bytes.Bytes32;
 import org.apache.tuweni.units.bigints.UInt256;
@@ -178,6 +179,73 @@ class TestStackTest {
 
     assertThatThrownBy(() -> stack.preserveTop(5, 1)).isInstanceOf(UnderflowException.class);
     assertThatThrownBy(() -> stack.preserveTop(1, 5)).isInstanceOf(UnderflowException.class);
+  }
+
+  @Test
+  void testCheckStackForPop() {
+    // Push 4 elements onto the stack
+    final OperandStack stack = new OperandStack(8);
+    stack.pushUnsafe(BigInteger.valueOf(1));
+    stack.pushUnsafe(BigInteger.valueOf(2));
+    stack.pushUnsafe(BigInteger.valueOf(3));
+    stack.pushUnsafe(BigInteger.valueOf(4));
+    // I can pop 0, 1, 2, 3, 4. But I cannot pop 5, because I don't have 5.
+    stack.checkStackForPop(0);
+    stack.checkStackForPop(1);
+    stack.checkStackForPop(2);
+    stack.checkStackForPop(3);
+    stack.checkStackForPop(4);
+    assertThatThrownBy(() -> stack.checkStackForPop(5)).isInstanceOf(UnderflowException.class);
+
+    // Pop 1. I have 3 elements on the stack.
+    stack.popUnsafe();
+    // I can pop 0, 1, 2, 3. But I cannot pop 4, because I don't have 4.
+    stack.checkStackForPop(0);
+    stack.checkStackForPop(1);
+    stack.checkStackForPop(2);
+    stack.checkStackForPop(3);
+    assertThatThrownBy(() -> stack.checkStackForPop(4)).isInstanceOf(UnderflowException.class);
+
+    // Pop 2. I have 1 element on the stack
+    stack.popUnsafe();
+    stack.popUnsafe();
+    // I can pop 0, 1. But I cannot pop 2, because I don't have 2.
+    assertThatThrownBy(() -> stack.checkStackForPop(2)).isInstanceOf(UnderflowException.class);
+
+    // Pop the last element. I have no elements on the stack.
+    stack.popUnsafe();
+    // But I can also pop 0. But I cannot pop 1, because I don't have 1.
+    stack.checkStackForPop(0);
+    assertThatThrownBy(() -> stack.checkStackForPop(1)).isInstanceOf(UnderflowException.class);
+  }
+
+  @Test
+  void testCheckStackForPush() {
+    final OperandStack stack = new OperandStack(4);
+    // I can push 4 elements
+    stack.checkStackForPush(0);
+    stack.checkStackForPush(1);
+    stack.checkStackForPush(2);
+    stack.checkStackForPush(3);
+    stack.checkStackForPush(4);
+    // I cannot push 5, because I have no space for it.
+    assertThatThrownBy(() -> stack.checkStackForPush(5)).isInstanceOf(OverflowException.class);
+
+    // I push one. Now I can only push 3 elements.
+    stack.pushUnsafe(BigInteger.valueOf(1));
+    stack.checkStackForPush(0);
+    stack.checkStackForPush(1);
+    stack.checkStackForPush(2);
+    stack.checkStackForPush(3);
+    assertThatThrownBy(() -> stack.checkStackForPush(4)).isInstanceOf(OverflowException.class);
+
+    // I push 3 more items. The stack is full.
+    stack.pushUnsafe(BigInteger.valueOf(2));
+    stack.pushUnsafe(BigInteger.valueOf(3));
+    stack.pushUnsafe(BigInteger.valueOf(4));
+    // I can put 0, but not 1.
+    stack.checkStackForPush(0);
+    assertThatThrownBy(() -> stack.checkStackForPush(1)).isInstanceOf(OverflowException.class);
   }
 
   @ParameterizedTest

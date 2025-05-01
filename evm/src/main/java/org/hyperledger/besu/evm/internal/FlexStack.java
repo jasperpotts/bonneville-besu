@@ -36,6 +36,7 @@ public class FlexStack<T> {
   private T[] entries;
 
   private final int maxSize;
+  private final int lastIndex;
   private int currentCapacity;
 
   private int top;
@@ -53,6 +54,7 @@ public class FlexStack<T> {
     this.currentCapacity = Math.min(INCREMENT, maxSize);
     this.entries = (T[]) Array.newInstance(klass, currentCapacity);
     this.maxSize = maxSize;
+    this.lastIndex = maxSize - 1;
     this.top = -1;
   }
 
@@ -62,8 +64,8 @@ public class FlexStack<T> {
    * @param numSlotsToPop the num slots to pop
    */
   public final void checkStackForPop(final int numSlotsToPop) {
-    if (top > numSlotsToPop) {
-      throw new RuntimeException("Stack underflow");
+    if (top + 1 < numSlotsToPop) {
+      throw new UnderflowException();
     }
   }
 
@@ -73,8 +75,8 @@ public class FlexStack<T> {
    * @param numSlotsToPush the num slots to push
    */
   public final void checkStackForPush(final int numSlotsToPush) {
-    if ((currentCapacity - top) >= numSlotsToPush) {
-      throw new RuntimeException("Stack overflow");
+    if ((lastIndex - top) < numSlotsToPush) {
+      throw new OverflowException();
     }
   }
 
