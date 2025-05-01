@@ -51,7 +51,7 @@ public class NotOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     stack.checkStackForPop(1);
     final BigInteger value0 = stack.popUnsafe();
-    final BigInteger result = value0.not();
+    final BigInteger result = value0.not().and(MASK_256_BITS);
     stack.pushUnsafe(result);
 
     return notSuccess;
