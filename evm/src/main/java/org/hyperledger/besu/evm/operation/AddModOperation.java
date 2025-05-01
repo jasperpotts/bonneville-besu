@@ -19,9 +19,8 @@ import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 
-import org.apache.tuweni.bytes.Bytes;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /** The Add mod operation. */
 public class AddModOperation extends AbstractFixedCostOperation {
@@ -44,35 +43,37 @@ public class AddModOperation extends AbstractFixedCostOperation {
   }
 
   /**
-   * Static operation.
+   * A {@link BigInteger}-based ADDMOD implementation.
    *
    * @param frame the frame
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-
-    final Bytes value0 = frame.popStackItem();
-    final Bytes value1 = frame.popStackItem();
-    final Bytes value2 = frame.popStackItem();
-
-    if (value2.isZero()) {
-      frame.pushStackItem(FAILURE_STACK_ITEM);
+    final var stack = frame.stack();
+    stack.checkStackForPop(3);
+    final var operand1 = stack.popUnsafe();
+    final var operand2 = stack.popUnsafe();
+    final var modulus = stack.popUnsafe();
+    if (modulus.equals(BigInteger.ZERO)) {
+      stack.pushUnsafe(BigInteger.ZERO);
     } else {
-      BigInteger b0 = new BigInteger(1, value0.toArrayUnsafe());
-      BigInteger b1 = new BigInteger(1, value1.toArrayUnsafe());
-      BigInteger b2 = new BigInteger(1, value2.toArrayUnsafe());
-
-      BigInteger result = b0.add(b1).mod(b2);
-      Bytes resultBytes = Bytes.wrap(result.toByteArray());
-      if (resultBytes.size() > 32) {
-        resultBytes = resultBytes.slice(resultBytes.size() - 32, 32);
-      }
-
-      final byte[] padding = new byte[32 - resultBytes.size()];
-      Arrays.fill(padding, result.signum() < 0 ? (byte) 0xFF : 0x00);
-
-      frame.pushStackItem(Bytes.concatenate(Bytes.wrap(padding), resultBytes));
+      stack.pushUnsafe(biAddMod(operand1, operand2, modulus));
     }
     return addModSuccess;
+  }
+
+  public static BigInteger biAddMod(
+      @NonNull final BigInteger operand1,
+      @NonNull final BigInteger operand2,
+      @NonNull final BigInteger modulus) {
+    var sumMod = operand1.add(operand2).mod(modulus);
+    sumMod = sumMod.and(MASK_256_BITS);
+    int bitLength = sumMod.bitLength();
+    if (bitLength < 256) {
+      int shift = 256 - bitLength;
+      sumMod = sumMod.shiftLeft(shift);
+      sumMod = sumMod.shiftRight(shift);
+    }
+    return sumMod;
   }
 }

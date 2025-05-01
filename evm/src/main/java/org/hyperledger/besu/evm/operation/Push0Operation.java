@@ -16,6 +16,7 @@ package org.hyperledger.besu.evm.operation;
 
 import static org.hyperledger.besu.evm.operation.PushOperation.PUSH_BASE;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
@@ -49,7 +50,7 @@ public class Push0Operation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    frame.pushStackItem(Bytes.EMPTY);
+    frame.stack().pushUnsafe(BigInteger.ZERO);
     return push0Success;
   }
 }

@@ -18,8 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
-import org.apache.tuweni.bytes.Bytes32;
+import java.math.BigInteger;
 
 /** The Not operation. */
 public class NotOperation extends AbstractFixedCostOperation {
@@ -49,11 +48,11 @@ public class NotOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value = Bytes32.leftPad(frame.popStackItem());
-
-    final Bytes result = value.not();
-
-    frame.pushStackItem(result);
+    final var stack = frame.stack();
+    stack.checkStackForPop(1);
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger result = value0.not();
+    stack.pushUnsafe(result);
 
     return notSuccess;
   }

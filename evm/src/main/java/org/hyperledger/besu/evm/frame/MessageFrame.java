@@ -577,6 +577,17 @@ public class MessageFrame {
   }
 
   /**
+   * Sets the stack item at the specified offset from the top of the stack to the value
+   *
+   * @param offset The item's position relative to the top of the stack
+   * @param value The value to set the stack item to
+   * @throws IllegalStateException if the stack is too small
+   */
+  public void setStackItem(final int offset, final BigInteger value) {
+    stack.set(offset, value);
+  }
+
+  /**
    * Return the current stack size.
    *
    * @return The current stack size
