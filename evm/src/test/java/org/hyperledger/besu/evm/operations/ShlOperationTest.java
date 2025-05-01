@@ -14,6 +14,7 @@
  */
 package org.hyperledger.besu.evm.operations;
 
+import static org.hyperledger.besu.evm.frame.MessageFrame.toBigInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.gascalculator.SpuriousDragonGasCalculator;
+import org.hyperledger.besu.evm.internal.OperandStack;
 import org.hyperledger.besu.evm.operation.ShlOperation;
 
 import java.util.Arrays;
@@ -105,12 +107,17 @@ class ShlOperationTest {
   @MethodSource("data")
   void shiftOperation(final String number, final String shift, final String expectedResult) {
     final MessageFrame frame = mock(MessageFrame.class);
+    final OperandStack stack = mock(OperandStack.class);
+
     when(frame.stackSize()).thenReturn(2);
     when(frame.getRemainingGas()).thenReturn(100L);
-    when(frame.popStackItem())
-        .thenReturn(UInt256.fromBytes(Bytes32.fromHexStringLenient(shift)))
-        .thenReturn(UInt256.fromHexString(number));
+    when(frame.stack()).thenReturn(stack);
+
+    when(stack.popUnsafe())
+        .thenReturn(toBigInt(UInt256.fromBytes(Bytes32.fromHexStringLenient(shift))))
+        .thenReturn(toBigInt(UInt256.fromHexString(number)));
     operation.execute(frame, null);
-    verify(frame).pushStackItem(Bytes.fromHexString(expectedResult));
+
+    verify(stack).pushUnsafe(toBigInt(Bytes.fromHexString(expectedResult)));
   }
 }
