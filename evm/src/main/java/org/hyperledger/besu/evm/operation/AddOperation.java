@@ -54,7 +54,7 @@ public class AddOperation extends AbstractFixedCostOperation {
     stack.checkStackForPop(2);
     final BigInteger value0 = stack.popUnsafe();
     final BigInteger value1 = stack.popUnsafe();
-    final BigInteger result = value0.add(value1);
+    final BigInteger result = value0.add(value1).and(MASK_256_BITS);
     stack.pushUnsafe(result);
     return addSuccess;
   }
