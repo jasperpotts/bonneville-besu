@@ -18,12 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.code.CodeV0;
 import org.hyperledger.besu.evm.frame.BlockValues;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.BerlinGasCalculator;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.internal.OperandStack;
 import org.hyperledger.besu.evm.operation.Operation;
 import org.hyperledger.besu.evm.operation.Operation.OperationResult;
 import org.hyperledger.besu.evm.operation.Push0Operation;
@@ -44,7 +46,7 @@ class Push0OperationTest {
     final MessageFrame frame = createMessageFrame(100, Optional.of(Wei.of(5L)));
     final Operation operation = new Push0Operation(gasCalculator);
     final OperationResult result = operation.execute(frame, null);
-    Mockito.verify(frame).pushStackItem(Bytes.EMPTY);
+    assertThat(frame.stack().popUnsafe()).isEqualTo(BigInteger.ZERO);
     assertThat(result.getGasCost()).isEqualTo(gasCalculator.getBaseTierGasCost());
     assertSuccessResult(result);
   }
@@ -55,11 +57,13 @@ class Push0OperationTest {
   }
 
   private MessageFrame createMessageFrame(final long initialGas, final Optional<Wei> baseFee) {
+    final OperandStack opStack = new OperandStack(256);
     final MessageFrame frame = mock(MessageFrame.class);
     when(frame.getRemainingGas()).thenReturn(initialGas);
     final BlockValues blockValues = new FakeBlockValues(baseFee);
     when(frame.getBlockValues()).thenReturn(blockValues);
     when(frame.getCode()).thenReturn(CodeV0.EMPTY_CODE);
+    when(frame.stack()).thenReturn(opStack);
     return frame;
   }
 }
