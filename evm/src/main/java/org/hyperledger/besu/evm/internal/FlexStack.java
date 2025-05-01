@@ -51,7 +51,7 @@ public class FlexStack<T> {
   public FlexStack(final int maxSize, final Class<T> klass) {
     checkArgument(maxSize > 0, "max size must be positive");
 
-    this.currentCapacity = Math.min(INCREMENT, maxSize);
+    this.currentCapacity = maxSize; //Math.min(INCREMENT, maxSize);
     this.entries = (T[]) Array.newInstance(klass, currentCapacity);
     this.maxSize = maxSize;
     this.lastIndex = maxSize - 1;
