@@ -504,6 +504,17 @@ public class MessageFrame {
   }
 
   /**
+   * Returns the item at the specified offset in the stack.
+   *
+   * @param offset The item's position relative to the top of the stack
+   * @return The item at the specified offset in the stack
+   * @throws UnderflowException if the offset is out of range
+   */
+  public BigInteger getStackItemBigInteger(final int offset) {
+    return stack.get(offset);
+  }
+
+  /**
    * Removes the item at the top of the stack.
    *
    * @return the item at the top of the stack
@@ -533,6 +544,15 @@ public class MessageFrame {
    */
   public void pushStackItem(final Bytes value) {
     stack.push(toBigInt(value));
+  }
+
+  /**
+   * Pushes the corresponding item onto the top of the stack
+   *
+   * @param value The value to push onto the stack.
+   */
+  public void pushStackItem(final BigInteger value) {
+    stack.push(value);
   }
 
   /**
