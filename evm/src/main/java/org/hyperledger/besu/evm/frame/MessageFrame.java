@@ -513,6 +513,10 @@ public class MessageFrame {
     return toBytes(stack.pop());
   }
 
+  public OperandStack stack() {
+    return stack;
+  }
+
   /**
    * Removes the corresponding number of items from the top of the stack.
    *

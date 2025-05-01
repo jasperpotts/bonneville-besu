@@ -16,6 +16,7 @@ package org.hyperledger.besu.evm.testutils;
 
 import static org.hyperledger.besu.evm.frame.MessageFrame.DEFAULT_MAX_STACK_SIZE;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.datatypes.Address;
 import org.hyperledger.besu.datatypes.Hash;
 import org.hyperledger.besu.datatypes.Wei;
@@ -53,7 +54,7 @@ public class TestMessageFrameBuilder {
   private Code code = CodeV0.EMPTY_CODE;
   private int pc = 0;
   private int section = 0;
-  private final List<Bytes> stackItems = new ArrayList<>();
+  private final List<Object> stackItems = new ArrayList<>();
   private Optional<Function<Long, Hash>> blockHashLookup = Optional.empty();
   private Bytes memory = Bytes.EMPTY;
 
@@ -132,6 +133,11 @@ public class TestMessageFrameBuilder {
     return this;
   }
 
+  public TestMessageFrameBuilder pushStackItem(final BigInteger item) {
+    stackItems.add(item);
+    return this;
+  }
+
   public TestMessageFrameBuilder blockHashLookup(final Function<Long, Hash> blockHashLookup) {
     this.blockHashLookup = Optional.of(blockHashLookup);
     return this;
@@ -166,7 +172,10 @@ public class TestMessageFrameBuilder {
             .build();
     frame.setPC(pc);
     frame.setSection(section);
-    stackItems.forEach(frame::pushStackItem);
+    stackItems.forEach(item -> {
+      if (item instanceof Bytes) frame.pushStackItem((Bytes) item);
+      else frame.stack().pushUnsafe((BigInteger) item);
+    });
     frame.writeMemory(0, memory.size(), memory);
     return frame;
   }

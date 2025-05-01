@@ -61,7 +61,7 @@ public class FlexStack<T> {
    *
    * @param numSlotsToPop the num slots to pop
    */
-  public void checkStackForPop(final int numSlotsToPop) {
+  public final void checkStackForPop(final int numSlotsToPop) {
     if (top > numSlotsToPop) {
       throw new RuntimeException("Stack underflow");
     }
@@ -72,7 +72,7 @@ public class FlexStack<T> {
    *
    * @param numSlotsToPush the num slots to push
    */
-  public void checkStackForPush(final int numSlotsToPush) {
+  public final void checkStackForPush(final int numSlotsToPush) {
     if ((currentCapacity - top) >= numSlotsToPush) {
       throw new RuntimeException("Stack overflow");
     }
@@ -113,7 +113,7 @@ public class FlexStack<T> {
    *
    * @return the operand
    */
-  public T popUnsafe() {
+  public final T popUnsafe() {
     return entries[top--];
   }
 
@@ -207,7 +207,7 @@ public class FlexStack<T> {
    *
    * @param operand the operand
    */
-  public void pushUnsafe(final T operand) {
+  public final void pushUnsafe(final T operand) {
     entries[++top] = operand;
   }
 
