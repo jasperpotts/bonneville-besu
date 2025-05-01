@@ -15,13 +15,14 @@
 
 package org.hyperledger.besu.evm.operations;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import org.hyperledger.besu.evm.operation.DupOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.junit.jupiter.api.Test;
 
 class DupOperationTest {
 
@@ -47,7 +48,7 @@ class DupOperationTest {
               .pushStackItem(BigInteger.valueOf(1))
               .pushStackItem(BigInteger.valueOf(0))
               .build();
-      DupOperation.staticOperation(frame, offset+1);
+      DupOperation.staticOperation(frame, offset + 1);
       final var result = frame.getStackItemBigInteger(0);
       assertThat(result).isEqualTo(BigInteger.valueOf(offset));
       final var stackTop = frame.getStackItemBigInteger(1);

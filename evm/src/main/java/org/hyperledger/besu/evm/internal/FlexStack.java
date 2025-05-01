@@ -138,7 +138,7 @@ public class FlexStack<T> {
    * @return the T entry
    */
   public T peekUnsafe() {
-      return entries[top];
+    return entries[top];
   }
 
   /**
