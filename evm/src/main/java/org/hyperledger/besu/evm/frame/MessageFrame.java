@@ -17,6 +17,8 @@ package org.hyperledger.besu.evm.frame;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Collections.emptySet;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import org.hyperledger.besu.collections.trie.BytesTrieSet;
 import org.hyperledger.besu.collections.undo.UndoSet;
 import org.hyperledger.besu.collections.undo.UndoTable;
@@ -498,7 +500,7 @@ public class MessageFrame {
    * @throws UnderflowException if the offset is out of range
    */
   public Bytes getStackItem(final int offset) {
-    return stack.get(offset);
+    return toBytes(stack.get(offset));
   }
 
   /**
@@ -508,7 +510,7 @@ public class MessageFrame {
    * @throws UnderflowException if the stack is empty
    */
   public Bytes popStackItem() {
-    return stack.pop();
+    return toBytes(stack.pop());
   }
 
   /**
@@ -526,7 +528,7 @@ public class MessageFrame {
    * @param value The value to push onto the stack.
    */
   public void pushStackItem(final Bytes value) {
-    stack.push(value);
+    stack.push(toBigInt(value));
   }
 
   /**
@@ -537,7 +539,7 @@ public class MessageFrame {
    * @throws IllegalStateException if the stack is too small
    */
   public void setStackItem(final int offset, final Bytes value) {
-    stack.set(offset, value);
+    stack.set(offset, toBigInt(value));
   }
 
   /**
@@ -574,6 +576,45 @@ public class MessageFrame {
    */
   public void pushReturnStackItem(final ReturnStack.ReturnStackItem returnStackItem) {
     returnStack.get().push(returnStackItem);
+  }
+
+  /**
+   * Converts a Bytes object to a BigInteger, treating the input as unsigned.
+   *
+   * @param bytes The input Bytes.
+   * @return A BigInteger representing the unsigned value of the Bytes.
+   */
+  public static BigInteger toBigInt(final Bytes bytes) {
+    return new BigInteger(1, bytes.toArrayUnsafe());
+  }
+
+  /**
+   * Converts a BigInteger back to a Bytes object of the specified length,
+   * preserving the exact byte content without sign extension.
+   *
+   * @param bigInt The BigInteger to convert.
+   * @return A Bytes object containing the unsigned value.
+   * @throws IllegalArgumentException If the BigInteger cannot fit in the specified length.
+   */
+  public static Bytes toBytes(final BigInteger bigInt) {
+    // Get the byte array from BigInteger
+    byte[] raw = bigInt.toByteArray();
+    // If the array is longer than needed (e.g., due to leading zero), trim it
+    if (raw.length > 32) {
+      if (raw.length == 32 + 1 && raw[0] == 0) {
+        // Strip leading zero byte
+        return Bytes.wrap(Arrays.copyOfRange(raw, 1, raw.length));
+      }
+      throw new IllegalArgumentException("BigInteger too large for " + 32 + " bytes");
+    }
+    // If the array is shorter, pad with leading zeros
+    if (raw.length < 32) {
+      byte[] result = new byte[32];
+      System.arraycopy(raw, 0, result, 32 - raw.length, raw.length);
+      return Bytes.wrap(result);
+    }
+    // Exact length match
+    return Bytes.wrap(raw);
   }
 
   /**
