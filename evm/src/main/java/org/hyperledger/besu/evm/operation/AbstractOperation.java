@@ -14,6 +14,7 @@
  */
 package org.hyperledger.besu.evm.operation;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import org.apache.tuweni.bytes.Bytes;
@@ -23,6 +24,9 @@ import org.apache.tuweni.bytes.Bytes;
  * members for free.
  */
 public abstract class AbstractOperation implements Operation {
+
+  /** The Mul operation mask. */
+  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
 
   static final Bytes BYTES_ONE = Bytes.of(1);
   static final Bytes SUCCESS_STACK_ITEM = BYTES_ONE;
