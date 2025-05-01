@@ -51,24 +51,16 @@ public class ModOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes value0 = frame.popStackItem();
-    final Bytes value1 = frame.popStackItem();
-    if (value1.isZero()) {
-      frame.pushStackItem(Bytes32.ZERO);
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
+    final BigInteger value0 = stack.popUnsafe();
+    final BigInteger value1 = stack.popUnsafe();
+
+    if (value1.signum() == 0) {
+      stack.pushUnsafe(BigInteger.ZERO);
     } else {
-      BigInteger b1 = new BigInteger(1, value0.toArrayUnsafe());
-      BigInteger b2 = new BigInteger(1, value1.toArrayUnsafe());
-      final BigInteger result = b1.mod(b2);
-
-      Bytes resultBytes = Bytes.wrap(result.toByteArray());
-      if (resultBytes.size() > 32) {
-        resultBytes = resultBytes.slice(resultBytes.size() - 32, 32);
-      }
-
-      final byte[] padding = new byte[32 - resultBytes.size()];
-      Arrays.fill(padding, result.signum() < 0 ? (byte) 0xFF : 0x00);
-
-      frame.pushStackItem(Bytes.concatenate(Bytes.wrap(padding), resultBytes));
+      final BigInteger result = value0.mod(value1).and(MASK_256_BITS);
+      stack.pushUnsafe(result);
     }
 
     return modSuccess;
