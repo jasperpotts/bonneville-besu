@@ -57,6 +57,28 @@ public class FlexStack<T> {
   }
 
   /**
+   * Check stack for pop.
+   *
+   * @param numSlotsToPop the num slots to pop
+   */
+  public void checkStackForPop(final int numSlotsToPop) {
+    if (top > numSlotsToPop) {
+      throw new RuntimeException("Stack underflow");
+    }
+  }
+
+  /**
+   * Check stack for push.
+   *
+   * @param numSlotsToPush the num slots to push
+   */
+  public void checkStackForPush(final int numSlotsToPush) {
+    if ((currentCapacity - top) >= numSlotsToPush) {
+      throw new RuntimeException("Stack overflow");
+    }
+  }
+
+  /**
    * Get operand.
    *
    * @param offset the offset
@@ -83,6 +105,16 @@ public class FlexStack<T> {
     final T removed = entries[top];
     entries[top--] = null;
     return removed;
+  }
+
+  /**
+   * Pop operand. This method does not check for underflow and should only be used when the caller
+   * is sure that the stack is not empty.
+   *
+   * @return the operand
+   */
+  public T popUnsafe() {
+    return entries[top--];
   }
 
   /**
@@ -167,6 +199,16 @@ public class FlexStack<T> {
     }
     entries[nextTop] = operand;
     top = nextTop;
+  }
+
+  /**
+   * Push operand. This method does not check for overflow and should only be used when the caller
+   * is sure that the stack is not full.
+   *
+   * @param operand the operand
+   */
+  public void pushUnsafe(final T operand) {
+    entries[++top] = operand;
   }
 
   /**
