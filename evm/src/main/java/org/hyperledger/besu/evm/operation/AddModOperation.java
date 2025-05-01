@@ -14,12 +14,13 @@
  */
 package org.hyperledger.besu.evm.operation;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /** The Add mod operation. */
 public class AddModOperation extends AbstractFixedCostOperation {
@@ -61,7 +62,10 @@ public class AddModOperation extends AbstractFixedCostOperation {
     return addModSuccess;
   }
 
-  public static BigInteger biAddMod(@NonNull final BigInteger operand1, @NonNull final BigInteger operand2, @NonNull final BigInteger modulus) {
+  public static BigInteger biAddMod(
+      @NonNull final BigInteger operand1,
+      @NonNull final BigInteger operand2,
+      @NonNull final BigInteger modulus) {
     var sumMod = operand1.add(operand2).mod(modulus);
     sumMod = sumMod.and(MASK_256_BITS);
     int bitLength = sumMod.bitLength();
