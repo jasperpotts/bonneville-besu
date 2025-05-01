@@ -61,7 +61,8 @@ class JumpIOperationTest {
     JumpiOperation jumpi = new JumpiOperation(gasCalculator);
     Operation.OperationResult jumpiResult = jumpi.execute(messageFrame, null);
 
-    assertThat(jumpiResult.getHaltReason()).isEqualTo(ExceptionalHaltReason.INVALID_JUMP_DESTINATION);
+    assertThat(jumpiResult.getHaltReason())
+        .isEqualTo(ExceptionalHaltReason.INVALID_JUMP_DESTINATION);
     assertThat(messageFrame.getPC()).isEqualTo(1);
   }
 

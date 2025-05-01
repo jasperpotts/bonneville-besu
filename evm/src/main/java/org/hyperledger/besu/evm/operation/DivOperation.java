@@ -52,7 +52,13 @@ public class DivOperation extends AbstractFixedCostOperation {
     stack.checkStackForPop(2);
     final BigInteger value0 = stack.popUnsafe();
     final BigInteger value1 = stack.popUnsafe();
-    final BigInteger result = value0.divide(value1).and(MASK_256_BITS);
+
+    final BigInteger result;
+    if (value0.equals(BigInteger.ZERO) || value1.equals(BigInteger.ZERO)) {
+      result = BigInteger.ZERO; // Division by zero yields 0
+    } else {
+      result = value0.divide(value1).and(MASK_256_BITS);
+    }
     stack.pushUnsafe(result);
     return divSuccess;
   }

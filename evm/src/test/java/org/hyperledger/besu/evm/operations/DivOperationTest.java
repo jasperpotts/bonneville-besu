@@ -6,41 +6,24 @@ import org.hyperledger.besu.evm.operation.DivOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 
 import java.math.BigInteger;
-import java.util.Random;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class DivOperationTest {
+public class DivOperationTest extends BaseNumericTest {
 
-  @Test
-  public void testDivOperation() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+  @ParameterizedTest
+  @MethodSource("provideBigIntegerTestCases")
+  void testDivOperation(final BigInteger a, final BigInteger b) {
+    final BigInteger expected =
+        (a.equals(BigInteger.ZERO) || b.equals(BigInteger.ZERO))
+            ? BigInteger.ZERO
+            : a.divide(b).and(MASK_256_BITS);
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     DivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(10 / 2));
-  }
-
-  @Test
-  public void testMoreDivOperations() {
-    final Random rand = new Random(129828978189L);
-    for (int i = 0; i < 100; i++) {
-      final long a = rand.nextLong(0, Long.MAX_VALUE / 10_000);
-      final long b = rand.nextLong(0, 10_000);
-      final long expected = b / a;
-      final var frame =
-          new TestMessageFrameBuilder()
-              .pushStackItem(BigInteger.valueOf(a))
-              .pushStackItem(BigInteger.valueOf(b))
-              .build();
-      DivOperation.staticOperation(frame);
-      final var result = frame.stack().popUnsafe();
-      assertThat(result)
-          .withFailMessage("Expected %d/%d = %d but got %d", b, a, expected, result)
-          .isEqualTo(BigInteger.valueOf(expected));
-    }
+    assertThat(result)
+        .withFailMessage("Expected %d/%d = %d but got %d", a, b, expected, result)
+        .isEqualTo(expected);
   }
 }

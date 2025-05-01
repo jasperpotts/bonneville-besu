@@ -14,14 +14,13 @@
  */
 package org.hyperledger.besu.evm.operation;
 
-import java.math.BigInteger;
 import org.hyperledger.besu.evm.Code;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
+import java.math.BigInteger;
 
 /** The JUMPI operation. */
 public class JumpiOperation extends AbstractFixedCostOperation {

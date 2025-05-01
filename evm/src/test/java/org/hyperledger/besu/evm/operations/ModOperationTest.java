@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,6 +23,57 @@ class ModOperationTest {
   private static final BigInteger TWO_POW_256 = BigInteger.ONE.shiftLeft(256);
   private static final BigInteger MAX_U256 = TWO_POW_256.subtract(BigInteger.ONE);
   private static final Random RANDOM = new Random(4302025L);
+
+  // Test BigInteger modulo function
+  @Test
+  void testModByZero() {
+    final var frame =
+        new TestMessageFrameBuilder()
+            .pushStackItem(BigInteger.ZERO) // Denominator (b)
+            .pushStackItem(BigInteger.TEN) // Numerator (a)
+            .build();
+    final var op = new ModOperation(gasCalculator);
+    final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
+    final var remainder = frame.stack().popUnsafe();
+    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(result.getGasCost()).isEqualTo(5);
+    assertThat(result.getHaltReason()).isNull();
+    assertThat(result.getPcIncrement()).isEqualTo(1);
+  }
+
+  // Test BigInteger modulo function
+  @Test
+  void testModByZeroSigned() {
+    final var frame =
+        new TestMessageFrameBuilder()
+            .pushStackItem(new BigInteger(-1, new byte[32])) // Denominator (b)
+            .pushStackItem(BigInteger.TEN) // Numerator (a)
+            .build();
+    final var op = new ModOperation(gasCalculator);
+    final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
+    final var remainder = frame.stack().popUnsafe();
+    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(result.getGasCost()).isEqualTo(5);
+    assertThat(result.getHaltReason()).isNull();
+    assertThat(result.getPcIncrement()).isEqualTo(1);
+  }
+
+  // Test BigInteger modulo function
+  @Test
+  void testModByZeroSignedPos() {
+    final var frame =
+        new TestMessageFrameBuilder()
+            .pushStackItem(new BigInteger(1, new byte[32])) // Denominator (b)
+            .pushStackItem(BigInteger.TEN) // Numerator (a)
+            .build();
+    final var op = new ModOperation(gasCalculator);
+    final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
+    final var remainder = frame.stack().popUnsafe();
+    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(result.getGasCost()).isEqualTo(5);
+    assertThat(result.getHaltReason()).isNull();
+    assertThat(result.getPcIncrement()).isEqualTo(1);
+  }
 
   // Test BigInteger modulo function
   @ParameterizedTest
