@@ -524,6 +524,16 @@ public class MessageFrame {
     return toBytes(stack.pop());
   }
 
+  /**
+   * Removes the item at the top of the stack.
+   *
+   * @return the item at the top of the stack
+   * @throws UnderflowException if the stack is empty
+   */
+  public BigInteger popStackItemBigInteger() {
+    return stack.pop();
+  }
+
   public OperandStack stack() {
     return stack;
   }

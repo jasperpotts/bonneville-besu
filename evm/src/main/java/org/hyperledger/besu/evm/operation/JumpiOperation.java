@@ -14,6 +14,7 @@
  */
 package org.hyperledger.besu.evm.operation;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.evm.Code;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
@@ -51,16 +52,16 @@ public class JumpiOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final Bytes dest = frame.popStackItem().trimLeadingZeros();
-    final Bytes condition = frame.popStackItem().trimLeadingZeros();
+    final BigInteger dest = frame.popStackItemBigInteger();
+    final BigInteger condition = frame.popStackItemBigInteger();
 
-    // If condition is zero (false), no jump is will be performed. Therefore, skip the test.
-    if (condition.size() == 0) {
+    // If the condition is zero (false), no jump will be performed. Therefore, skip the test.
+    if (condition.equals(BigInteger.ZERO)) {
       return nojumpResponse;
     } else {
       final int jumpDestination;
       try {
-        jumpDestination = dest.toInt();
+        jumpDestination = dest.intValue();
       } catch (final RuntimeException re) {
         return invalidJumpResponse;
       }
