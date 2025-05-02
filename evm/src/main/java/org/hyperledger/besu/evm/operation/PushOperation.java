@@ -17,6 +17,8 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -72,11 +74,11 @@ public class PushOperation extends AbstractFixedCostOperation {
     int copyStart = pc + 1;
 
     if (code.length <= copyStart) {
-      stack.pushUnsafe(BigInteger.ZERO);
+      stack.pushUnsafe(Word.ZERO);
     } else {
       final int copyLength = Math.min(pushSize, code.length - pc - 1);
       final var bigInt = new BigInteger(1, code, copyStart, copyLength);
-      stack.pushUnsafe(bigInt);
+      stack.pushUnsafe(new Word256(bigInt));
     }
     frame.setPC(pc + pushSize);
     return pushSuccess;

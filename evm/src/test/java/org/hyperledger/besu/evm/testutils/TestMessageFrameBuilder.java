@@ -26,6 +26,7 @@ import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.internal.Words;
 import org.hyperledger.besu.evm.toy.ToyWorld;
 import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
 import java.math.BigInteger;
@@ -181,8 +182,9 @@ public class TestMessageFrameBuilder {
     stackItems.forEach(
         item -> {
           if (item instanceof Bytes) frame.pushStackItem((Bytes) item);
-          else if (item instanceof BigInteger) frame.stack().pushUnsafe((BigInteger) item);
-          else if (item instanceof Word) frame.stack2().pushUnsafe((Word) item);
+          else if (item instanceof BigInteger)
+            frame.stack().pushUnsafe(new Word256((BigInteger) item));
+          else if (item instanceof Word) frame.stack().pushUnsafe((Word) item);
         });
     frame.writeMemory(0, memory.size(), memory);
     return frame;

@@ -18,6 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -69,9 +70,9 @@ public class SwapOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     stack.checkStackForPop(index - 1);
 
-    final BigInteger tmp = stack.peekUnsafe();
+    final BigInteger tmp = stack.peekUnsafe().as256Bit().asBigInteger();
     stack.setUnsafe(0, stack.peekUnsafe(index));
-    stack.setUnsafe(index, tmp);
+    stack.setUnsafe(index, new Word256(tmp));
 
     return swapSuccess;
   }

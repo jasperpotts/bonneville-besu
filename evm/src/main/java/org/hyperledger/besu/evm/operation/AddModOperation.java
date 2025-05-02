@@ -47,7 +47,7 @@ public class AddModOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack2();
+    final var stack = frame.stack();
     stack.checkStackForPop(3);
     final var u0 = stack.popUnsafe();
     final var u1 = stack.popUnsafe();

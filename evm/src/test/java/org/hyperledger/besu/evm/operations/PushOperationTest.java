@@ -46,7 +46,7 @@ class PushOperationTest {
 
     final var frame = new TestMessageFrameBuilder().build();
     final var result = PushOperation.staticOperation(frame, code, 0, byteLength);
-    final var stackValue = frame.stack().popUnsafe();
+    final var stackValue = frame.stack().popUnsafe().as256Bit().asBigInteger();
 
     System.out.println("Code: " + Arrays.toString(code));
     System.out.println("Byte length: " + byteLength);

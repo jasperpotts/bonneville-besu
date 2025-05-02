@@ -19,6 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.MulOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -32,12 +34,12 @@ class MulOperationTest extends BaseNumericTest {
   @ParameterizedTest
   @MethodSource("provideBigIntegerTestCases")
   void testMulOperation(final BigInteger a, final BigInteger b) {
-    final BigInteger expected = a.multiply(b).and(MASK_256_BITS);
+    final Word expected = new Word256(a.multiply(b));
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     MulOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result)
-        .withFailMessage("Expected %d * %d = %d but got %d", a, b, expected, result)
+        .withFailMessage("Expected %s * %s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);
   }
 
@@ -50,7 +52,7 @@ class MulOperationTest extends BaseNumericTest {
             .build();
     MulOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(20));
+    assertThat(result).isEqualTo(Word.of(20));
   }
 
   @Test
@@ -67,7 +69,7 @@ class MulOperationTest extends BaseNumericTest {
               .build();
       MulOperation.staticOperation(frame);
       final var result = frame.stack().popUnsafe();
-      assertThat(result).isEqualTo(BigInteger.valueOf(expected));
+      assertThat(result).isEqualTo(Word.of(expected));
     }
   }
 }

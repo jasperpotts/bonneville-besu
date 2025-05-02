@@ -34,7 +34,7 @@ public class AndOperationTest extends BaseNumericTest {
     final Word expected = a.and(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack2().popUnsafe();
+    final var result = frame.stack().popUnsafe();
     assertThat(result)
         .withFailMessage("Expected %s & %s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);
@@ -48,7 +48,7 @@ public class AndOperationTest extends BaseNumericTest {
             .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack2().popUnsafe();
+    final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(new Word63(2));
   }
 
@@ -60,7 +60,7 @@ public class AndOperationTest extends BaseNumericTest {
             .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack2().popUnsafe();
+    final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);
   }
 
@@ -72,7 +72,7 @@ public class AndOperationTest extends BaseNumericTest {
             .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack2().popUnsafe();
+    final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(new Word63(10));
   }
 }

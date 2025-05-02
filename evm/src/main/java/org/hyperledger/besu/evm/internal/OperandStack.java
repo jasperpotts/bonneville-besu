@@ -16,12 +16,15 @@
 
 package org.hyperledger.besu.evm.internal;
 
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HexFormat;
 
 /** The Operand stack. */
-public class OperandStack extends FlexStack<BigInteger> {
+public class OperandStack extends FlexStack<Word> {
 
   /**
    * Instantiates a new Operand stack.
@@ -29,7 +32,7 @@ public class OperandStack extends FlexStack<BigInteger> {
    * @param maxSize the max size
    */
   public OperandStack(final int maxSize) {
-    super(maxSize, BigInteger.class);
+    super(maxSize, Word.class);
   }
 
   /**
@@ -39,7 +42,7 @@ public class OperandStack extends FlexStack<BigInteger> {
    * @return the operand as signed BigInteger
    */
   public final BigInteger popUnsafeSigned() {
-    final BigInteger unsigned = popUnsafe();
+    final BigInteger unsigned = popUnsafe().as256Bit().asBigInteger();
     System.out.println("unsigned = " + HexFormat.of().formatHex(unsigned.toByteArray()));
     if (unsigned.testBit(255)) {
       // Step 2: Convert it to a two's complement representation
@@ -73,9 +76,9 @@ public class OperandStack extends FlexStack<BigInteger> {
       int start = 32 - twosComplementBytes.length;
       System.arraycopy(twosComplementBytes, 0, paddedBytes, start, twosComplementBytes.length);
       // Step 4: push
-      push(new BigInteger(1, paddedBytes));
+      push(new Word256(new BigInteger(1, paddedBytes)));
     } else {
-      push(value);
+      push(new Word256(value));
     }
   }
 }

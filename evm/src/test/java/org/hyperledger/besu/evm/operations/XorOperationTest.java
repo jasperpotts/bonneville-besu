@@ -19,6 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.XorOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
 
 import java.math.BigInteger;
 
@@ -35,7 +36,7 @@ class XorOperationTest {
             .build();
     XorOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(11));
+    assertThat(result).isEqualTo(Word.of(11));
   }
 
   @Test
@@ -47,7 +48,7 @@ class XorOperationTest {
             .build();
     XorOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(0xff));
+    assertThat(result).isEqualTo(Word.of(0xff));
   }
 
   @Test
@@ -59,6 +60,6 @@ class XorOperationTest {
             .build();
     XorOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(0));
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 }

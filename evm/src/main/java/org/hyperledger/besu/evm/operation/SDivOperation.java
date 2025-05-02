@@ -17,6 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -61,7 +62,7 @@ public class SDivOperation extends AbstractFixedCostOperation {
       result = value0.divide(value1);
     }
 
-    stack.pushUnsafe(result.and(MASK_256_BITS));
+    stack.pushUnsafe(new Word256(result.and(MASK_256_BITS)));
     return sdivSuccess;
   }
 }

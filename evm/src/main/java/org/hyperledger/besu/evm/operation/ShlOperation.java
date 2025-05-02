@@ -17,6 +17,8 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -69,17 +71,18 @@ public class ShlOperation extends AbstractFixedCostOperation {
     // AFTER
     final var stack = frame.stack();
     stack.checkStackForPop(1);
-    final var shiftSize = stack.popUnsafe();
+    final var shiftSize = stack.popUnsafe().as256Bit().asBigInteger();
     if (shiftSize.compareTo(OVERFLOW_SHIFT_SIZE) >= 0) {
       stack.checkStackForPop(1);
       stack.popUnsafe();
-      stack.pushUnsafe(BigInteger.ZERO);
+      stack.pushUnsafe(Word.ZERO);
     } else {
-      final var shifted = stack.popUnsafe();
+      final var shifted = stack.popUnsafe().as256Bit().asBigInteger();
       if (shiftSize.compareTo(SHIFT_OFF) >= 0 || shiftSize.compareTo(BigInteger.ZERO) < 0) {
-        stack.pushUnsafe(BigInteger.ZERO);
+        stack.pushUnsafe(Word.ZERO);
       } else {
-        stack.pushUnsafe(shifted.shiftLeft(shiftSize.intValueExact()).and(MASK_256_BITS));
+        stack.pushUnsafe(
+            new Word256(shifted.shiftLeft(shiftSize.intValueExact()).and(MASK_256_BITS)));
       }
     }
     return shlSuccess;

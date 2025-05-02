@@ -17,7 +17,7 @@ package org.hyperledger.besu.evm.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 import org.apache.tuweni.bytes.Bytes;
 import org.apache.tuweni.bytes.Bytes32;
@@ -186,10 +186,10 @@ class TestStackTest {
   void testCheckStackForPop() {
     // Push 4 elements onto the stack
     final OperandStack stack = new OperandStack(8);
-    stack.pushUnsafe(BigInteger.valueOf(1));
-    stack.pushUnsafe(BigInteger.valueOf(2));
-    stack.pushUnsafe(BigInteger.valueOf(3));
-    stack.pushUnsafe(BigInteger.valueOf(4));
+    stack.pushUnsafe(Word.of(1));
+    stack.pushUnsafe(Word.of(2));
+    stack.pushUnsafe(Word.of(3));
+    stack.pushUnsafe(Word.of(4));
     // I can pop 0, 1, 2, 3, 4. But I cannot pop 5, because I don't have 5.
     stack.checkStackForPop(0);
     stack.checkStackForPop(1);
@@ -233,7 +233,7 @@ class TestStackTest {
     assertThatThrownBy(() -> stack.checkStackForPush(5)).isInstanceOf(OverflowException.class);
 
     // I push one. Now I can only push 3 elements.
-    stack.pushUnsafe(BigInteger.valueOf(1));
+    stack.pushUnsafe(Word.ONE);
     stack.checkStackForPush(0);
     stack.checkStackForPush(1);
     stack.checkStackForPush(2);
@@ -241,9 +241,9 @@ class TestStackTest {
     assertThatThrownBy(() -> stack.checkStackForPush(4)).isInstanceOf(OverflowException.class);
 
     // I push 3 more items. The stack is full.
-    stack.pushUnsafe(BigInteger.valueOf(2));
-    stack.pushUnsafe(BigInteger.valueOf(3));
-    stack.pushUnsafe(BigInteger.valueOf(4));
+    stack.pushUnsafe(Word.of(2));
+    stack.pushUnsafe(Word.of(3));
+    stack.pushUnsafe(Word.of(4));
     // I can put 0, but not 1.
     stack.checkStackForPush(0);
     assertThatThrownBy(() -> stack.checkStackForPush(1)).isInstanceOf(OverflowException.class);

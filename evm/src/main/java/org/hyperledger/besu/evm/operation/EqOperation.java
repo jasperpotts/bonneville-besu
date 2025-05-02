@@ -17,8 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Eq operation. */
 public class EqOperation extends AbstractFixedCostOperation {
@@ -51,10 +50,10 @@ public class EqOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     stack.checkStackForPop(2);
 
-    final BigInteger value0 = stack.popUnsafe();
-    final BigInteger value1 = stack.popUnsafe();
+    final Word value0 = stack.popUnsafe();
+    final Word value1 = stack.popUnsafe();
 
-    final BigInteger result = value0.equals(value1) ? BigInteger.ONE : BigInteger.ZERO;
+    final Word result = value0.isEqualTo(value1) ? Word.ONE : Word.ZERO;
     stack.pushUnsafe(result);
 
     return eqSuccess;

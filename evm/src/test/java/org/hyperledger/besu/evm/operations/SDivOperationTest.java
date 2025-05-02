@@ -19,6 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.SDivOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -49,7 +51,7 @@ class SDivOperationTest extends BaseNumericTest {
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(10 / 2));
+    assertThat(result).isEqualTo(Word.of(10 / 2));
   }
 
   @Test
@@ -61,7 +63,7 @@ class SDivOperationTest extends BaseNumericTest {
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(9 / -3).abs());
+    assertThat(result).isEqualTo(new Word256(BigInteger.valueOf(9 / -3).abs()));
   }
 
   @Test
@@ -73,7 +75,7 @@ class SDivOperationTest extends BaseNumericTest {
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -85,7 +87,7 @@ class SDivOperationTest extends BaseNumericTest {
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE.shiftLeft(255));
+    assertThat(result).isEqualTo(new Word256(BigInteger.ONE.shiftLeft(255)));
   }
 
   @Test
@@ -97,6 +99,6 @@ class SDivOperationTest extends BaseNumericTest {
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE.shiftLeft(255));
+    assertThat(result).isEqualTo(new Word256(BigInteger.ONE.shiftLeft(255)));
   }
 }

@@ -32,7 +32,7 @@ class DivOperationTest extends BaseNumericTest {
     final Word expected = (a.equals(Word.ZERO) || b.equals(Word.ZERO)) ? Word.ZERO : a.divide(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     DivOperation.staticOperation(frame);
-    final var result = frame.stack2().popUnsafe();
+    final var result = frame.stack().popUnsafe();
     assertThat(result)
         .withFailMessage("Expected %s/%s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);

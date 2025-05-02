@@ -36,7 +36,7 @@ class AddOperationTest extends BaseNumericTest {
     final var frame = new TestMessageFrameBuilder().pushStackItem(a).pushStackItem(b).build();
     final var op = new AddOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
-    final var sum = frame.stack2().popUnsafe();
+    final var sum = frame.stack().popUnsafe();
     assertThat(sum).isEqualTo(expected);
     assertThat(result.getGasCost()).isEqualTo(3);
     assertThat(result.getHaltReason()).isNull();

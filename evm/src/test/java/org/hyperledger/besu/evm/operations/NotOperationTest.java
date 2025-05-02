@@ -19,6 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.NotOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
 
 import java.math.BigInteger;
 
@@ -31,6 +32,6 @@ class NotOperationTest {
     final var frame = new TestMessageFrameBuilder().pushStackItem(BigInteger.valueOf(-1)).build();
     NotOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(0x0));
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 }

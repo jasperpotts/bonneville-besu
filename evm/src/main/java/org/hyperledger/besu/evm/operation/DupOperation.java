@@ -18,8 +18,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Dup operation. */
 public class DupOperation extends AbstractFixedCostOperation {
@@ -70,7 +69,7 @@ public class DupOperation extends AbstractFixedCostOperation {
     stack.checkStackForPop(index - 1);
     stack.checkStackForPush(1);
 
-    final BigInteger value0 = stack.peekUnsafe(index - 1);
+    final Word value0 = stack.peekUnsafe(index - 1);
     stack.pushUnsafe(value0);
     return dupSuccess;
   }

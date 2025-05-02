@@ -26,7 +26,6 @@ import org.hyperledger.besu.datatypes.VersionedHash;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.Code;
 import org.hyperledger.besu.evm.code.CodeSection;
-import org.hyperledger.besu.evm.internal.FlexStack;
 import org.hyperledger.besu.evm.internal.MemoryEntry;
 import org.hyperledger.besu.evm.internal.OperandStack;
 import org.hyperledger.besu.evm.internal.ReturnStack;
@@ -35,6 +34,7 @@ import org.hyperledger.besu.evm.internal.UnderflowException;
 import org.hyperledger.besu.evm.log.Log;
 import org.hyperledger.besu.evm.operation.Operation;
 import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
 import java.math.BigInteger;
@@ -217,7 +217,6 @@ public class MessageFrame {
   private int section = 0;
   private final Memory memory = new Memory();
   private final OperandStack stack;
-  private final FlexStack<Word> stack2;
   private final Supplier<ReturnStack> returnStack;
   private Bytes output = Bytes.EMPTY;
   private Bytes returnData = Bytes.EMPTY;
@@ -283,7 +282,6 @@ public class MessageFrame {
     this.worldUpdater = worldUpdater;
     this.gasRemaining = initialGas;
     this.stack = new OperandStack(txValues.maxStackSize());
-    this.stack2 = new FlexStack<Word>(1024, Word.class);
     this.returnStack =
         Suppliers.memoize(
             () -> {
@@ -504,7 +502,7 @@ public class MessageFrame {
    * @throws UnderflowException if the offset is out of range
    */
   public Bytes getStackItem(final int offset) {
-    return toBytes(stack.get(offset));
+    return Bytes.wrap(stack.get(offset).asArray32());
   }
 
   /**
@@ -515,7 +513,7 @@ public class MessageFrame {
    * @throws UnderflowException if the offset is out of range
    */
   public BigInteger getStackItemBigInteger(final int offset) {
-    return stack.get(offset);
+    return stack.get(offset).as256Bit().asBigInteger();
   }
 
   /**
@@ -525,7 +523,7 @@ public class MessageFrame {
    * @throws UnderflowException if the stack is empty
    */
   public Bytes popStackItem() {
-    return toBytes(stack.pop());
+    return Bytes.wrap(stack.pop().asArray32());
   }
 
   /**
@@ -535,15 +533,11 @@ public class MessageFrame {
    * @throws UnderflowException if the stack is empty
    */
   public BigInteger popStackItemBigInteger() {
-    return stack.pop();
+    return stack.pop().as256Bit().asBigInteger();
   }
 
   public OperandStack stack() {
     return stack;
-  }
-
-  public FlexStack<Word> stack2() {
-    return stack2;
   }
 
   /**
@@ -561,7 +555,7 @@ public class MessageFrame {
    * @param value The value to push onto the stack.
    */
   public void pushStackItem(final Bytes value) {
-    stack.push(toBigInt(value));
+    stack.push(Word.of(value.toArrayUnsafe()));
   }
 
   /**
@@ -570,7 +564,7 @@ public class MessageFrame {
    * @param value The value to push onto the stack.
    */
   public void pushStackItem(final BigInteger value) {
-    stack.push(value);
+    stack.push(new Word256(value));
   }
 
   /**
@@ -581,7 +575,7 @@ public class MessageFrame {
    * @throws IllegalStateException if the stack is too small
    */
   public void setStackItem(final int offset, final Bytes value) {
-    stack.set(offset, toBigInt(value));
+    stack.set(offset, Word.of(value.toArrayUnsafe()));
   }
 
   /**
@@ -592,7 +586,7 @@ public class MessageFrame {
    * @throws IllegalStateException if the stack is too small
    */
   public void setStackItem(final int offset, final BigInteger value) {
-    stack.set(offset, value);
+    stack.set(offset, new Word256(value));
   }
 
   /**

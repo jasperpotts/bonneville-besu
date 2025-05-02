@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.operation.ModOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -33,13 +35,13 @@ class ModOperationTest extends BaseNumericTest {
   @ParameterizedTest
   @MethodSource("provideBigIntegerTestCases")
   void testModOperation(final BigInteger a, final BigInteger b) {
-    final BigInteger expected = b.signum() == 0 ? BigInteger.ZERO : a.mod(b).and(MASK_256_BITS);
+    final Word expected = b.signum() == 0 ? Word.ZERO : new Word256(a.mod(b));
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     final var op = new ModOperation(gasCalculator);
     op.executeFixedCostOperation(frame, mock(EVM.class));
     final var remainder = frame.stack().popUnsafe();
     assertThat(remainder)
-        .withFailMessage("Expected %d %% %d = %d but got %d", a, b, expected, remainder)
+        .withFailMessage("Expected %s %% %s = %s but got %s", a, b, expected, remainder)
         .isEqualTo(expected);
   }
 
@@ -54,7 +56,7 @@ class ModOperationTest extends BaseNumericTest {
     final var op = new ModOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
     final var remainder = frame.stack().popUnsafe();
-    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(remainder).isEqualTo(Word.ZERO);
     assertThat(result.getGasCost()).isEqualTo(5);
     assertThat(result.getHaltReason()).isNull();
     assertThat(result.getPcIncrement()).isEqualTo(1);
@@ -71,7 +73,7 @@ class ModOperationTest extends BaseNumericTest {
     final var op = new ModOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
     final var remainder = frame.stack().popUnsafe();
-    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(remainder).isEqualTo(Word.ZERO);
     assertThat(result.getGasCost()).isEqualTo(5);
     assertThat(result.getHaltReason()).isNull();
     assertThat(result.getPcIncrement()).isEqualTo(1);
@@ -88,7 +90,7 @@ class ModOperationTest extends BaseNumericTest {
     final var op = new ModOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
     final var remainder = frame.stack().popUnsafe();
-    assertThat(remainder).isEqualTo(BigInteger.ZERO);
+    assertThat(remainder).isEqualTo(Word.ZERO);
     assertThat(result.getGasCost()).isEqualTo(5);
     assertThat(result.getHaltReason()).isNull();
     assertThat(result.getPcIncrement()).isEqualTo(1);

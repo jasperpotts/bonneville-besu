@@ -19,6 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.LtOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
 
 import java.math.BigInteger;
 
@@ -31,12 +32,12 @@ class LtOperationTest extends BaseNumericTest {
   @ParameterizedTest
   @MethodSource("provideBigIntegerTestCases")
   void testLtOperation(final BigInteger a, final BigInteger b) {
-    final BigInteger expected = a.compareTo(b) < 0 ? BigInteger.ONE : BigInteger.ZERO;
+    final Word expected = a.compareTo(b) < 0 ? Word.ONE : Word.ZERO;
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result)
-        .withFailMessage("Expected %d < %d = %d but got %d", a, b, expected, result)
+        .withFailMessage("Expected %s < %s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);
   }
 
@@ -49,7 +50,7 @@ class LtOperationTest extends BaseNumericTest {
             .build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE);
+    assertThat(result).isEqualTo(Word.ONE);
   }
 
   @Test
@@ -61,7 +62,7 @@ class LtOperationTest extends BaseNumericTest {
             .build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -73,6 +74,6 @@ class LtOperationTest extends BaseNumericTest {
             .build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 }

@@ -19,6 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.OrOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 
@@ -31,12 +33,12 @@ class OrOperationTest extends BaseNumericTest {
   @ParameterizedTest
   @MethodSource("provideBigIntegerTestCases")
   void testOrOperation(final BigInteger a, final BigInteger b) {
-    final BigInteger expected = a.or(b).and(MASK_256_BITS);
+    final Word expected = new Word256(a.or(b));
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result)
-        .withFailMessage("Expected %d | %d = %d but got %d", a, b, expected, result)
+        .withFailMessage("Expected %s | %s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);
   }
 
@@ -49,7 +51,7 @@ class OrOperationTest extends BaseNumericTest {
             .build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(11));
+    assertThat(result).isEqualTo(Word.of(11));
   }
 
   @Test
@@ -61,7 +63,7 @@ class OrOperationTest extends BaseNumericTest {
             .build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(10));
+    assertThat(result).isEqualTo(Word.of(10));
   }
 
   @Test
@@ -73,6 +75,6 @@ class OrOperationTest extends BaseNumericTest {
             .build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(255));
+    assertThat(result).isEqualTo(Word.of(255));
   }
 }

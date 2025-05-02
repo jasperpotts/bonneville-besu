@@ -29,8 +29,8 @@ import org.hyperledger.besu.evm.operation.Operation;
 import org.hyperledger.besu.evm.operation.Operation.OperationResult;
 import org.hyperledger.besu.evm.operation.Push0Operation;
 import org.hyperledger.besu.evm.testutils.FakeBlockValues;
+import org.hyperledger.besu.evm.word.Word;
 
-import java.math.BigInteger;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class Push0OperationTest {
     final MessageFrame frame = createMessageFrame(100, Optional.of(Wei.of(5L)));
     final Operation operation = new Push0Operation(gasCalculator);
     final OperationResult result = operation.execute(frame, null);
-    assertThat(frame.stack().popUnsafe()).isEqualTo(BigInteger.ZERO);
+    assertThat(frame.stack().popUnsafe()).isEqualTo(Word.ZERO);
     assertThat(result.getGasCost()).isEqualTo(gasCalculator.getBaseTierGasCost());
     assertSuccessResult(result);
   }

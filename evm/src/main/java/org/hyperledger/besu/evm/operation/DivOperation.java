@@ -46,7 +46,7 @@ public class DivOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack2();
+    final var stack = frame.stack();
     stack.checkStackForPop(2);
     stack.pushUnsafe(stack.popUnsafe().divide(stack.popUnsafe()));
     return divSuccess;

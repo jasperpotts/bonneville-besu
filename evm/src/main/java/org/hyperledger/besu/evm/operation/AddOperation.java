@@ -46,9 +46,11 @@ public class AddOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack2();
+    final var stack = frame.stack();
     stack.checkStackForPop(2);
-    stack.pushUnsafe(stack.popUnsafe().add(stack.popUnsafe()));
+    final var u0 = stack.popUnsafe();
+    final var u1 = stack.popUnsafe();
+    stack.pushUnsafe(u0.add(u1));
     return addSuccess;
   }
 }

@@ -199,6 +199,11 @@ public class Word63 implements Word {
   }
 
   @Override
+  public String toHexString() {
+    return Long.toHexString(value);
+  }
+
+  @Override
   public String toString() {
     return Long.toBinaryString(value);
   }

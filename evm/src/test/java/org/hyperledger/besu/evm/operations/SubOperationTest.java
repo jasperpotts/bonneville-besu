@@ -23,6 +23,7 @@ import org.hyperledger.besu.evm.gascalculator.BerlinGasCalculator;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.operation.SubOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -50,7 +51,7 @@ class SubOperationTest {
     final var op = new SubOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
     final var difference = frame.stack().popUnsafe();
-    assertThat(difference).isEqualTo(expected);
+    assertThat(difference).isEqualTo(new Word256(expected));
     assertThat(result.getGasCost()).isEqualTo(3);
     assertThat(result.getHaltReason()).isNull();
     assertThat(result.getPcIncrement()).isEqualTo(1);

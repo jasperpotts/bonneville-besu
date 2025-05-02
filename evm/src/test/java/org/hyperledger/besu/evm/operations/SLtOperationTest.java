@@ -19,6 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.SLtOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
 
 import java.math.BigInteger;
 
@@ -35,7 +36,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE);
+    assertThat(result).isEqualTo(Word.ONE);
   }
 
   @Test
@@ -47,7 +48,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE);
+    assertThat(result).isEqualTo(Word.ONE);
   }
 
   @Test
@@ -59,7 +60,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ONE);
+    assertThat(result).isEqualTo(Word.ONE);
   }
 
   @Test
@@ -71,7 +72,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -83,7 +84,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -95,7 +96,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -107,7 +108,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -119,7 +120,7 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
@@ -131,6 +132,6 @@ class SLtOperationTest {
             .build();
     SLtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.ZERO);
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 }

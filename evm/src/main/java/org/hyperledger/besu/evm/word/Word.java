@@ -19,12 +19,10 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 public interface Word {
+  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
   Word ZERO = new Word63(0L);
   Word ONE = new Word63(1L);
-  Word MIN_UNSIGNED_WORD = new Word256(BigInteger.ZERO);
-  Word MIN_SIGNED_WORD = new Word256(BigInteger.valueOf(Long.MIN_VALUE));
   Word MAX = Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-  Word MAX_SIGNED_WORD = new Word256(BigInteger.valueOf(Long.MAX_VALUE));
 
   boolean isZero();
 
@@ -84,6 +82,12 @@ public interface Word {
 
   Word and(final Word other);
 
+  String toHexString();
+
+  static Word of(final long value) {
+    return new Word63(value);
+  }
+
   // Given some byte array, construct the most optional Word (Word63 or Word256)
   static Word of(final byte[] bytes) {
     // Find the first byte which is not zero
@@ -119,6 +123,7 @@ public interface Word {
 
   static Word ofHexString(final String hexString) {
     final var str = hexString.startsWith("0x") ? hexString.substring(2) : hexString;
+    if (str.isBlank()) return ZERO;
     return of(new BigInteger(str, 16).toByteArray());
   }
 }

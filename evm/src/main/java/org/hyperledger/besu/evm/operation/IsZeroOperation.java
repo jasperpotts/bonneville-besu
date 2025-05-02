@@ -17,8 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Is zero operation. */
 public class IsZeroOperation extends AbstractFixedCostOperation {
@@ -51,9 +50,9 @@ public class IsZeroOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     stack.checkStackForPop(1);
 
-    final BigInteger value0 = stack.popUnsafe();
+    final Word value0 = stack.popUnsafe();
 
-    final BigInteger result = value0.equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ZERO;
+    final Word result = value0.isZero() ? Word.ONE : Word.ZERO;
     stack.pushUnsafe(result);
 
     return isZeroSuccess;

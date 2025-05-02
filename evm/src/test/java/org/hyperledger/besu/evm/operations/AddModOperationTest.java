@@ -54,7 +54,7 @@ class AddModOperationTest {
             .build();
 
     AddModOperation.staticOperation(frame);
-    final var actual = frame.stack2().popUnsafe();
+    final var actual = frame.stack().popUnsafe();
     assertEquals(expected, Bytes.wrap(actual.asArray32()));
   }
 

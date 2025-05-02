@@ -17,6 +17,8 @@ package org.hyperledger.besu.evm.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.hyperledger.besu.evm.word.Word256;
+
 import java.math.BigInteger;
 import java.util.HexFormat;
 
@@ -31,7 +33,7 @@ class OperandStackTest {
 
     // Push a 256-bit unsigned integer (2^255) onto the stack
     BigInteger unsignedValue = BigInteger.ONE.shiftLeft(255);
-    stack.push(unsignedValue);
+    stack.push(new Word256(unsignedValue));
 
     // Pop and convert to signed
     BigInteger signedValue = stack.popUnsafeSigned();
@@ -41,7 +43,7 @@ class OperandStackTest {
 
     // Push a smaller unsigned value (e.g., 123)
     unsignedValue = BigInteger.valueOf(123);
-    stack.push(unsignedValue);
+    stack.push(new Word256(unsignedValue));
 
     // Pop and convert to signed
     signedValue = stack.popUnsafeSigned();
@@ -62,7 +64,7 @@ class OperandStackTest {
     System.out.println("Signed value: " + HexFormat.of().formatHex(signedValue.toByteArray()));
 
     // Pop and convert to unsigned
-    BigInteger unsignedValue = stack.popUnsafe();
+    BigInteger unsignedValue = stack.popUnsafe().as256Bit().asBigInteger();
     System.out.println("Unsigned value: " + HexFormat.of().formatHex(unsignedValue.toByteArray()));
 
     BigInteger readSigned = stack.popUnsafeSigned();
@@ -85,7 +87,7 @@ class OperandStackTest {
     stack.pushSigned(signedValue); // push second time so we can pop twice
 
     // Pop and convert to unsigned
-    BigInteger unsignedValue = stack.popUnsafe();
+    BigInteger unsignedValue = stack.popUnsafe().as256Bit().asBigInteger();
 
     // Assert the unsigned value is the two's complement representation
     assertEquals(signedValue.add(BigInteger.ONE.shiftLeft(256)), unsignedValue);

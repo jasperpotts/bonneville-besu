@@ -14,7 +14,6 @@
  */
 package org.hyperledger.besu.evm.operations;
 
-import static org.hyperledger.besu.evm.frame.MessageFrame.toBigInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,12 +23,10 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.gascalculator.SpuriousDragonGasCalculator;
 import org.hyperledger.besu.evm.internal.OperandStack;
 import org.hyperledger.besu.evm.operation.ShlOperation;
+import org.hyperledger.besu.evm.word.Word;
 
 import java.util.Arrays;
 
-import org.apache.tuweni.bytes.Bytes;
-import org.apache.tuweni.bytes.Bytes32;
-import org.apache.tuweni.units.bigints.UInt256;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -114,10 +111,10 @@ class ShlOperationTest {
     when(frame.stack()).thenReturn(stack);
 
     when(stack.popUnsafe())
-        .thenReturn(toBigInt(UInt256.fromBytes(Bytes32.fromHexStringLenient(shift))))
-        .thenReturn(toBigInt(UInt256.fromHexString(number)));
+        .thenReturn(Word.ofHexString(shift))
+        .thenReturn(Word.ofHexString(number));
     operation.execute(frame, null);
 
-    verify(stack).pushUnsafe(toBigInt(Bytes.fromHexString(expectedResult)));
+    verify(stack).pushUnsafe(Word.ofHexString(expectedResult));
   }
 }

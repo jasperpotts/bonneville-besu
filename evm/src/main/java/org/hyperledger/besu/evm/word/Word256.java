@@ -18,11 +18,10 @@ package org.hyperledger.besu.evm.word;
 import java.math.BigInteger;
 
 public class Word256 implements Word {
-  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
   final BigInteger value;
 
-  public Word256(final BigInteger value) {
-    this.value = value.and(MASK_256_BITS);
+  public Word256(final BigInteger b) {
+    this.value = b.and(MASK_256_BITS);
   }
 
   @Override
@@ -150,7 +149,16 @@ public class Word256 implements Word {
   }
 
   @Override
+  public String toHexString() {
+    return value.toString(16);
+  }
+
+  @Override
   public String toString() {
     return value.toString(2);
+  }
+
+  public BigInteger asBigInteger() {
+    return value;
   }
 }
