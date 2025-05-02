@@ -64,6 +64,16 @@ public interface Word {
 
   Word add(final Word other);
 
+  /**
+   * Adds the "other" word to this word and then takes the modulus of the result with the "mod"
+   * before limiting the result to 256 bits.
+   *
+   * @param other The word to add to this one
+   * @param mod The modulus to take after the addition
+   * @return The result of the addition mod the modulus and then limited to 256 bits
+   */
+  Word addMod(final Word other, final Word mod);
+
   Word subtract(final Word other);
 
   Word multiply(final Word other);

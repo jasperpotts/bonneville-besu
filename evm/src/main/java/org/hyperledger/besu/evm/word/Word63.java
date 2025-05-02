@@ -132,15 +132,6 @@ public class Word63 implements Word {
   }
 
   @Override
-  public Word subtract(final Word other) {
-    if (other.is63Bit()) {
-      final var result = this.value - ((Word63) other).value;
-      if (result >=0) return new Word63(result);
-    }
-    return as256Bit().subtract(other);
-  }
-
-  @Override
   public Word multiply(final Word other) {
     if (other.is63Bit()) {
       try {
@@ -151,6 +142,15 @@ public class Word63 implements Word {
       }
     }
     return as256Bit().multiply(other);
+  }
+
+  @Override
+  public Word subtract(final Word other) {
+    if (other.is63Bit()) {
+      final var result = this.value - ((Word63) other).value;
+      if (result >=0) return new Word63(result);
+    }
+    return as256Bit().subtract(other);
   }
 
   @Override
@@ -166,6 +166,8 @@ public class Word63 implements Word {
     return as256Bit().divide(other);
   }
 
+  // TODO sdiv
+
   @Override
   public Word mod(final Word other) {
     if (other.is63Bit()) {
@@ -177,6 +179,22 @@ public class Word63 implements Word {
       if (result >= 0) return new Word63(result);
     }
     return as256Bit().mod(other);
+  }
+
+  // TODO smod
+
+  @Override
+  public Word addMod(final Word other, final Word mod) {
+    if (other.is63Bit() && mod.is63Bit()) {
+      final var modulus = ((Word63) mod).value;
+      if (modulus == 0) return Word.ZERO; // EVM Semantics
+      final var sum = this.value + ((Word63) other).value;
+      if (sum >= 0) {
+        final var result = sum % modulus;
+        return new Word63(result);
+      }
+    }
+    return as256Bit().addMod(other, mod);
   }
 
   @Override

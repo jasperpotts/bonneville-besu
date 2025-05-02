@@ -52,9 +52,10 @@ public class AddModOperation extends AbstractFixedCostOperation {
   public static OperationResult staticOperation(final MessageFrame frame) {
     final var stack = frame.stack2();
     stack.checkStackForPop(3);
-    stack.pushUnsafe(stack.popUnsafe()
-            .add(stack.popUnsafe())
-            .mod(stack.popUnsafe()));
+    final var u0 = stack.popUnsafe();
+    final var u1 = stack.popUnsafe();
+    final var u2 = stack.popUnsafe();
+    stack.pushUnsafe(u0.addMod(u1, u2));
     return addModSuccess;
   }
 }

@@ -118,7 +118,7 @@ class AddModOperationTest {
       BigInteger b0 = new BigInteger(1, operand1.toArrayUnsafe());
       BigInteger b1 = new BigInteger(1, operand2.toArrayUnsafe());
       BigInteger b2 = new BigInteger(1, modulus.toArrayUnsafe());
-      BigInteger result = b0.add(b1).and(MASK_256_BITS).mod(b2);
+      BigInteger result = b0.add(b1).mod(b2).and(MASK_256_BITS);
       Bytes resultBytes = Bytes.wrap(result.toByteArray());
       if (resultBytes.size() > 32) {
         resultBytes = resultBytes.slice(resultBytes.size() - 32, 32);
