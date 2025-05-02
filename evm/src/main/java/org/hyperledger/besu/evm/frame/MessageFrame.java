@@ -26,6 +26,7 @@ import org.hyperledger.besu.datatypes.VersionedHash;
 import org.hyperledger.besu.datatypes.Wei;
 import org.hyperledger.besu.evm.Code;
 import org.hyperledger.besu.evm.code.CodeSection;
+import org.hyperledger.besu.evm.internal.FlexStack;
 import org.hyperledger.besu.evm.internal.MemoryEntry;
 import org.hyperledger.besu.evm.internal.OperandStack;
 import org.hyperledger.besu.evm.internal.ReturnStack;
@@ -33,6 +34,7 @@ import org.hyperledger.besu.evm.internal.StorageEntry;
 import org.hyperledger.besu.evm.internal.UnderflowException;
 import org.hyperledger.besu.evm.log.Log;
 import org.hyperledger.besu.evm.operation.Operation;
+import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.worldstate.WorldUpdater;
 
 import java.math.BigInteger;
@@ -215,6 +217,7 @@ public class MessageFrame {
   private int section = 0;
   private final Memory memory = new Memory();
   private final OperandStack stack;
+  private final FlexStack<Word> stack2;
   private final Supplier<ReturnStack> returnStack;
   private Bytes output = Bytes.EMPTY;
   private Bytes returnData = Bytes.EMPTY;
@@ -280,6 +283,7 @@ public class MessageFrame {
     this.worldUpdater = worldUpdater;
     this.gasRemaining = initialGas;
     this.stack = new OperandStack(txValues.maxStackSize());
+    this.stack2 = new FlexStack<Word>(1024, Word.class);
     this.returnStack =
         Suppliers.memoize(
             () -> {
@@ -536,6 +540,10 @@ public class MessageFrame {
 
   public OperandStack stack() {
     return stack;
+  }
+
+  public FlexStack<Word> stack2() {
+    return stack2;
   }
 
   /**

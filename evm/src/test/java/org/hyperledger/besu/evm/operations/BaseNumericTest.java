@@ -9,6 +9,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Streams;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
+import org.hyperledger.besu.evm.word.Word63;
 import org.junit.jupiter.params.provider.Arguments;
 
 /** BaseNumericTest is a base class for testing numeric operations in the EVM. */
@@ -49,11 +52,47 @@ public class BaseNumericTest {
             .mapToObj(i -> Arguments.of(generateRandomU256(), generateRandomU256())));
   }
 
+  // Provide test cases for Word, pairs of interesting values
+  static Stream<Arguments> provideWordTestCases() {
+    return Streams.concat(
+        Stream.of(
+            // Basic values
+            Arguments.of(Word.ZERO, Word.ZERO),
+            Arguments.of(Word.ZERO, new Word63(1)),
+            Arguments.of(new Word63(1), Word.ZERO),
+            Arguments.of(new Word63(1), new Word63(1)),
+            Arguments.of(new Word63(10), new Word63(2)),
+            Arguments.of(new Word63(2), new Word63(10)),
+            Arguments.of(new Word63(100), new Word63(200)),
+
+            // Edge cases: max 256-bit value
+            Arguments.of(Word.MAX, Word.ZERO),
+            Arguments.of(Word.MAX, new Word63(1)), // Overflow: 2^256 - 1 + 1 = 0 mod 2^256
+            Arguments.of(Word.MAX, new Word63(2)), // Overflow: 2^256 - 1 + 2 = 1 mod 2^256
+            Arguments.of(Word.ZERO, Word.MAX),
+            Arguments.of(new Word63(1), Word.MAX),
+            Arguments.of(new Word63(2), Word.MAX),
+
+            // Some large numbers
+            Arguments.of(
+                new Word256(new BigInteger("1234567890123456789012345678901234567890")),
+                new Word256(new BigInteger("9876543210987654321098765432109876543210")))),
+        IntStream.range(0, 500) // Random large numbers
+            .mapToObj(i -> Arguments.of(generateRandomU2562(), generateRandomU2562())));
+  }
+
   // Helper: Generate a random 256-bit number
   private static BigInteger generateRandomU256() {
     byte[] bytes = new byte[32];
     RANDOM.nextBytes(bytes);
     // Ensure non-negative and within 256 bits
     return new BigInteger(1, bytes).and(MASK_256_BITS);
+  }
+
+  private static Word generateRandomU2562() {
+    byte[] bytes = new byte[32];
+    RANDOM.nextBytes(bytes);
+    // Ensure non-negative and within 256 bits
+    return Word.of(bytes);
   }
 }

@@ -1,0 +1,143 @@
+/*
+ * Copyright Hyperledger Besu Contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package org.hyperledger.besu.evm.word;
+
+import java.math.BigInteger;
+
+public class Word256 implements Word {
+  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
+  final BigInteger value;
+
+  public Word256(final BigInteger value) {
+    this.value = value.and(MASK_256_BITS);
+  }
+
+  @Override
+  public boolean isZero() {
+    return value.signum() == 0;
+  }
+
+  @Override
+  public boolean isPositive() {
+    return value.signum() > 0;
+  }
+
+  @Override
+  public boolean isGreaterThan(final Word other) {
+    return value.compareTo(other.as256Bit().value) > 0;
+  }
+
+  @Override
+  public boolean isLessThan(final Word other) {
+    return value.compareTo(other.as256Bit().value) < 0;
+  }
+
+  @Override
+  public boolean isGreaterThanOrEqualTo(final Word other) {
+    return value.compareTo(other.as256Bit().value) >= 0;
+  }
+
+  @Override
+  public boolean isLessThanOrEqualTo(final Word other) {
+    return value.compareTo(other.as256Bit().value) <= 0;
+  }
+
+  @Override
+  public boolean isEqualTo(final Word other) {
+    return value.compareTo(other.as256Bit().value) == 0;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof Word other) {
+      return this.isEqualTo(other);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
+
+  @Override
+  public boolean isNotEqualTo(final Word other) {
+    return value.compareTo(other.as256Bit().value) != 0;
+  }
+
+  @Override
+  public boolean is63Bit() {
+    return false;
+  }
+
+  @Override
+  public Word256 as256Bit() {
+    return this;
+  }
+
+  @Override
+  public byte[] asByteArray() {
+    if (value.equals(BigInteger.ZERO)) {
+      return new byte[0];
+    }
+    int bitLength = value.bitLength(); // Number of significant bits
+    int numBytes = (bitLength + 7) / 8; // Ceiling of bitLength / 8
+    byte[] bytes = new byte[numBytes];
+    for (int i = 0; i < numBytes; i++) {
+      bytes[numBytes - 1 - i] = value.shiftRight(i * 8).byteValue();
+    }
+    return bytes;
+  }
+
+  @Override
+  public Word add(final Word other) {
+    return new Word256(value.add(other.as256Bit().value));
+  }
+
+  @Override
+  public Word subtract(final Word other) {
+    return new Word256(value.subtract(other.as256Bit().value));
+  }
+
+  @Override
+  public Word multiply(final Word other) {
+    return new Word256(value.multiply(other.as256Bit().value));
+  }
+
+  @Override
+  public Word divide(final Word other) {
+    if (other.isZero()) {
+      return Word.ZERO; // EVM semantics
+    }
+    return new Word256(value.divide(other.as256Bit().value));
+  }
+
+  @Override
+  public Word mod(final Word other) {
+    if (other.isZero()) {
+      return Word.ZERO; // EVM semantics
+    }
+    return new Word256(value.mod(other.as256Bit().value));
+  }
+
+  @Override
+  public String toString() {
+    return value.toString(2);
+  }
+}

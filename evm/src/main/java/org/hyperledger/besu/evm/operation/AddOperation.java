@@ -18,8 +18,6 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import java.math.BigInteger;
-
 /** The Add operation. */
 public class AddOperation extends AbstractFixedCostOperation {
 
@@ -48,12 +46,9 @@ public class AddOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack();
+    final var stack = frame.stack2();
     stack.checkStackForPop(2);
-    final BigInteger value0 = stack.popUnsafe();
-    final BigInteger value1 = stack.popUnsafe();
-    final BigInteger result = value0.add(value1).and(MASK_256_BITS);
-    stack.pushUnsafe(result);
+    stack.pushUnsafe(stack.popUnsafe().add(stack.popUnsafe()));
     return addSuccess;
   }
 }

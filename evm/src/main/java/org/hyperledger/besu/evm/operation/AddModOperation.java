@@ -21,6 +21,7 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import java.math.BigInteger;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Add mod operation. */
 public class AddModOperation extends AbstractFixedCostOperation {
@@ -49,31 +50,11 @@ public class AddModOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack();
+    final var stack = frame.stack2();
     stack.checkStackForPop(3);
-    final var operand1 = stack.popUnsafe();
-    final var operand2 = stack.popUnsafe();
-    final var modulus = stack.popUnsafe();
-    if (modulus.equals(BigInteger.ZERO)) {
-      stack.pushUnsafe(BigInteger.ZERO);
-    } else {
-      stack.pushUnsafe(biAddMod(operand1, operand2, modulus));
-    }
+    stack.pushUnsafe(stack.popUnsafe()
+            .add(stack.popUnsafe())
+            .mod(stack.popUnsafe()));
     return addModSuccess;
-  }
-
-  public static BigInteger biAddMod(
-      @NonNull final BigInteger operand1,
-      @NonNull final BigInteger operand2,
-      @NonNull final BigInteger modulus) {
-    var sumMod = operand1.add(operand2).mod(modulus);
-    sumMod = sumMod.and(MASK_256_BITS);
-    int bitLength = sumMod.bitLength();
-    if (bitLength < 256) {
-      int shift = 256 - bitLength;
-      sumMod = sumMod.shiftLeft(shift);
-      sumMod = sumMod.shiftRight(shift);
-    }
-    return sumMod;
   }
 }

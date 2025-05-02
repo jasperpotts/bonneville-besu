@@ -17,20 +17,22 @@ package org.hyperledger.besu.evm.operations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.hyperledger.besu.evm.frame.MessageFrame;
-import org.hyperledger.besu.evm.operation.AddModOperation;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.SplittableRandom;
 import java.util.stream.Stream;
-
 import org.apache.tuweni.bytes.Bytes;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.hyperledger.besu.evm.operation.AddModOperation;
+import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class AddModOperationTest {
+  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
+
   @ParameterizedTest
   @MethodSource("randomTestCases")
   void compareOriginal(final AddModTestCase testCase) {
@@ -38,19 +40,19 @@ class AddModOperationTest {
     final Bytes operand2 = testCase.operand2;
     final Bytes modulus = testCase.modulus;
 
-    if (modulus.isZero()) {
-      return;
-    }
+    Assumptions.assumeFalse(modulus.isZero());
 
     final var expected = originalAddMod(operand1, operand2, modulus);
 
-    final var actual =
-        AddModOperation.biAddMod(
-            new BigInteger(1, operand1.toArrayUnsafe()),
-            new BigInteger(1, operand2.toArrayUnsafe()),
-            new BigInteger(1, modulus.toArrayUnsafe()));
+    final var frame = new TestMessageFrameBuilder()
+            .pushStackItem(Word.of(modulus.toArrayUnsafe()))
+            .pushStackItem(Word.of(operand2.toArrayUnsafe()))
+            .pushStackItem(Word.of(operand1.toArrayUnsafe()))
+            .build();
 
-    assertEquals(expected, MessageFrame.toBytes(actual));
+    AddModOperation.staticOperation(frame);
+    final var actual = frame.stack2().popUnsafe();
+    assertEquals(expected, Bytes.wrap(actual.asArray32()));
   }
 
   private static Stream<AddModTestCase> randomTestCases() {
@@ -116,7 +118,7 @@ class AddModOperationTest {
       BigInteger b0 = new BigInteger(1, operand1.toArrayUnsafe());
       BigInteger b1 = new BigInteger(1, operand2.toArrayUnsafe());
       BigInteger b2 = new BigInteger(1, modulus.toArrayUnsafe());
-      BigInteger result = b0.add(b1).mod(b2);
+      BigInteger result = b0.add(b1).and(MASK_256_BITS).mod(b2);
       Bytes resultBytes = Bytes.wrap(result.toByteArray());
       if (resultBytes.size() > 32) {
         resultBytes = resultBytes.slice(resultBytes.size() - 32, 32);
