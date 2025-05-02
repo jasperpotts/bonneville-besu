@@ -17,12 +17,11 @@
 package org.hyperledger.besu.evm.internal;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HexFormat;
 
 /** The Operand stack. */
 public class OperandStack extends FlexStack<BigInteger> {
-
-  private static final BigInteger twoToThe256 = BigInteger.ONE.shiftLeft(256); // 2^256
-  private static final BigInteger twoToThe255 = BigInteger.ONE.shiftLeft(255); // 2^255
 
   /**
    * Instantiates a new Operand stack.
@@ -41,10 +40,42 @@ public class OperandStack extends FlexStack<BigInteger> {
    */
   public final BigInteger popUnsafeSigned() {
     final BigInteger unsigned = popUnsafe();
-    if (unsigned.compareTo(twoToThe255) >= 0) {
-      return unsigned.subtract(twoToThe256);
+    System.out.println("unsigned = " + HexFormat.of().formatHex(unsigned.toByteArray()));
+    if (unsigned.testBit(255)) {
+      // Step 2: Convert it to a two's complement representation
+      byte[] bytes = unsigned.toByteArray();
+
+      // Step 3: Remove the leading zero byte if present
+      if (bytes[0] == 0) {
+        byte[] trimmedBytes = new byte[bytes.length - 1];
+        System.arraycopy(bytes, 1, trimmedBytes, 0, trimmedBytes.length);
+        bytes = trimmedBytes;
+      }
+      return new BigInteger(bytes);
     } else {
       return unsigned;
+    }
+  }
+
+  /**
+   * Push signed operand. Takes a signed biginteger and pushes it to the stack as an unsigned value
+   * with two's complement format.
+   *
+   * @param value the value
+   */
+  public final void pushSigned(final BigInteger value) {
+    if (value.signum() < 0) {
+      // Step 2: Get the two's complement byte array
+      byte[] twosComplementBytes = value.toByteArray();
+      // Step 3: Ensure the byte array is 32 bytes (256 bits)
+      byte[] paddedBytes = new byte[32];
+      Arrays.fill(paddedBytes, (byte) 0xFF);
+      int start = 32 - twosComplementBytes.length;
+      System.arraycopy(twosComplementBytes, 0, paddedBytes, start, twosComplementBytes.length);
+      // Step 4: push
+      push(new BigInteger(1, paddedBytes));
+    } else {
+      push(value);
     }
   }
 }

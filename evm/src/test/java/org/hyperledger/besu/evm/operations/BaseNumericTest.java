@@ -2,16 +2,17 @@ package org.hyperledger.besu.evm.operations;
 
 import org.hyperledger.besu.evm.gascalculator.BerlinGasCalculator;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word256;
+import org.hyperledger.besu.evm.word.Word63;
 
 import java.math.BigInteger;
+import java.util.HexFormat;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Streams;
-import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
-import org.hyperledger.besu.evm.word.Word63;
 import org.junit.jupiter.params.provider.Arguments;
 
 /** BaseNumericTest is a base class for testing numeric operations in the EVM. */
@@ -20,8 +21,37 @@ public class BaseNumericTest {
   static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
   private static final BigInteger TWO_POW_256 = BigInteger.ONE.shiftLeft(256);
   static final BigInteger MAX_U256 = TWO_POW_256.subtract(BigInteger.ONE);
+  private static final BigInteger MINUS_ONE = BigInteger.valueOf(-1);
 
   final GasCalculator gasCalculator = new BerlinGasCalculator();
+
+  public static void main(final String[] args) {
+    System.out.println(
+        "TWO_POW_256 = "
+            + HexFormat.of().formatHex(TWO_POW_256.toByteArray())
+            + " signum = "
+            + TWO_POW_256.signum());
+    byte[] bytes = new byte[32];
+    for (int i = 0; i < 32; i++) {
+      bytes[i] = (byte) 0xFF;
+    }
+    System.out.println("bytes = " + HexFormat.of().formatHex(bytes));
+
+    BigInteger a = new BigInteger(1, bytes);
+    System.out.println(
+        "a = " + HexFormat.of().formatHex(a.toByteArray()) + " signum = " + a.signum());
+    BigInteger b = toSigned(a);
+    System.out.println(
+        "b = " + HexFormat.of().formatHex(b.toByteArray()) + " signum = " + b.signum());
+  }
+
+  static BigInteger toSigned(final BigInteger unsigned) {
+    if (unsigned.testBit(255)) {
+      return unsigned.multiply(MINUS_ONE);
+    } else {
+      return unsigned;
+    }
+  }
 
   // Provide test cases for BigInteger, pairs of interesting values
   static Stream<Arguments> provideBigIntegerTestCases() {
@@ -33,7 +63,10 @@ public class BaseNumericTest {
             Arguments.of(BigInteger.ONE, BigInteger.ZERO),
             Arguments.of(BigInteger.ONE, BigInteger.ONE),
             Arguments.of(BigInteger.TEN, BigInteger.TWO),
+            Arguments.of(BigInteger.TEN, BigInteger.valueOf(3)),
             Arguments.of(BigInteger.TWO, BigInteger.TEN),
+            Arguments.of(BigInteger.TWO, BigInteger.ZERO),
+            Arguments.of(BigInteger.valueOf(17), BigInteger.valueOf(5)),
             Arguments.of(BigInteger.valueOf(100), BigInteger.valueOf(200)),
 
             // Edge cases: max 256-bit value
@@ -43,6 +76,7 @@ public class BaseNumericTest {
             Arguments.of(BigInteger.ZERO, MAX_U256),
             Arguments.of(BigInteger.ONE, MAX_U256),
             Arguments.of(BigInteger.TWO, MAX_U256),
+            Arguments.of(MAX_U256, MAX_U256),
 
             // Some large numbers
             Arguments.of(

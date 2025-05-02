@@ -20,9 +20,6 @@ import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.hyperledger.besu.evm.word.Word;
-
 /** The Add mod operation. */
 public class AddModOperation extends AbstractFixedCostOperation {
 

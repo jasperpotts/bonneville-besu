@@ -23,8 +23,22 @@ import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class EqOperationTest {
+public class EqOperationTest extends BaseNumericTest {
+
+  @ParameterizedTest
+  @MethodSource("provideBigIntegerTestCases")
+  void testEqOperation(final BigInteger a, final BigInteger b) {
+    final BigInteger expected = a.equals(b) ? BigInteger.ONE : BigInteger.ZERO;
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+    EqOperation.staticOperation(frame);
+    final var result = frame.stack().popUnsafe();
+    assertThat(result)
+        .withFailMessage("Expected %d == %d = %d but got %d", a, b, expected, result)
+        .isEqualTo(expected);
+  }
 
   @Test
   public void testEqOperationEqual() {

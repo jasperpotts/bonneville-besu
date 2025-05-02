@@ -23,7 +23,8 @@ public class Word63 implements Word {
   final long value;
 
   public Word63(final long value) {
-    // value must ONLY be >= 0. For now, I will do the test and throw but probably remove this later.
+    // value must ONLY be >= 0. For now, I will do the test and throw but probably remove this
+    // later.
     if (value < 0) throw new IllegalArgumentException("Negative value: " + value);
     this.value = value;
   }
@@ -40,37 +41,31 @@ public class Word63 implements Word {
 
   @Override
   public boolean isGreaterThan(final Word other) {
-    return other.is63Bit()
-            ? this.value > ((Word63) other).value
-            : as256Bit().isGreaterThan(other);
+    return other.is63Bit() ? this.value > ((Word63) other).value : as256Bit().isGreaterThan(other);
   }
 
   @Override
   public boolean isLessThan(final Word other) {
-    return other.is63Bit()
-            ? this.value < ((Word63) other).value
-            : as256Bit().isLessThan(other);
+    return other.is63Bit() ? this.value < ((Word63) other).value : as256Bit().isLessThan(other);
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(final Word other) {
     return other.is63Bit()
-            ? this.value >= ((Word63) other).value
-            : as256Bit().isGreaterThanOrEqualTo(other);
+        ? this.value >= ((Word63) other).value
+        : as256Bit().isGreaterThanOrEqualTo(other);
   }
 
   @Override
   public boolean isLessThanOrEqualTo(final Word other) {
     return other.is63Bit()
-            ? this.value <= ((Word63) other).value
-            : as256Bit().isLessThanOrEqualTo(other);
+        ? this.value <= ((Word63) other).value
+        : as256Bit().isLessThanOrEqualTo(other);
   }
 
   @Override
   public boolean isEqualTo(final Word other) {
-    return other.is63Bit()
-            ? this.value == ((Word63) other).value
-            : as256Bit().isEqualTo(other);
+    return other.is63Bit() ? this.value == ((Word63) other).value : as256Bit().isEqualTo(other);
   }
 
   @Override
@@ -91,9 +86,7 @@ public class Word63 implements Word {
 
   @Override
   public boolean isNotEqualTo(final Word other) {
-    return other.is63Bit()
-            ? this.value != ((Word63) other).value
-            : as256Bit().isNotEqualTo(other);
+    return other.is63Bit() ? this.value != ((Word63) other).value : as256Bit().isNotEqualTo(other);
   }
 
   @Override
@@ -148,7 +141,7 @@ public class Word63 implements Word {
   public Word subtract(final Word other) {
     if (other.is63Bit()) {
       final var result = this.value - ((Word63) other).value;
-      if (result >=0) return new Word63(result);
+      if (result >= 0) return new Word63(result);
     }
     return as256Bit().subtract(other);
   }

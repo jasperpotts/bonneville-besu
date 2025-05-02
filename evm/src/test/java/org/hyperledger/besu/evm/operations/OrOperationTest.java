@@ -23,8 +23,22 @@ import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class OrOperationTest {
+class OrOperationTest extends BaseNumericTest {
+
+  @ParameterizedTest
+  @MethodSource("provideBigIntegerTestCases")
+  void testOrOperation(final BigInteger a, final BigInteger b) {
+    final BigInteger expected = a.or(b).and(MASK_256_BITS);
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+    OrOperation.staticOperation(frame);
+    final var result = frame.stack().popUnsafe();
+    assertThat(result)
+        .withFailMessage("Expected %d | %d = %d but got %d", a, b, expected, result)
+        .isEqualTo(expected);
+  }
 
   @Test
   void testOrOperation1And10() {

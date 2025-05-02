@@ -89,10 +89,10 @@ public interface Word {
     // Find the first byte which is not zero
     int firstNonZeroByte = -1;
     for (int i = 0; i < bytes.length; i++) {
-        if (bytes[i] != 0) {
-            firstNonZeroByte = i;
-            break;
-        }
+      if (bytes[i] != 0) {
+        firstNonZeroByte = i;
+        break;
+      }
     }
 
     // Optimization for zero

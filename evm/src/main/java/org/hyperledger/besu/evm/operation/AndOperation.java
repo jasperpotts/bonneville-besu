@@ -18,9 +18,6 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import java.math.BigInteger;
-import org.hyperledger.besu.evm.word.Word;
-
 /** The And operation. */
 public class AndOperation extends AbstractFixedCostOperation {
 

@@ -18,9 +18,6 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import java.math.BigInteger;
-import org.hyperledger.besu.evm.word.Word;
-
 /** The Div operation. */
 public class DivOperation extends AbstractFixedCostOperation {
 

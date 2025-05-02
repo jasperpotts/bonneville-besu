@@ -24,7 +24,21 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
-class SDivOperationTest {
+class SDivOperationTest extends BaseNumericTest {
+
+  //  @ParameterizedTest
+  //  @MethodSource("provideBigIntegerTestCases")
+  //  void testSDivOperationMany(final BigInteger a, final BigInteger b) {
+  //      final BigInteger expected = (a.equals(BigInteger.ZERO) || b.equals(BigInteger.ZERO))
+  //          ? BigInteger.ZERO
+  //          : toSigned(a).divide(toSigned(b)).and(MASK_256_BITS);
+  //      final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+  //      SDivOperation.staticOperation(frame);
+  //      final var result = frame.stack().popUnsafe();
+  //      assertThat(result)
+  //          .withFailMessage("Expected %d/%d = %d but got %d", a, b, expected, result)
+  //          .isEqualTo(expected);
+  //    }
 
   @Test
   void testSDivOperation() {

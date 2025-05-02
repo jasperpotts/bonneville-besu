@@ -17,15 +17,17 @@ package org.hyperledger.besu.evm.operations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.hyperledger.besu.evm.operation.AddModOperation;
+import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.SplittableRandom;
 import java.util.stream.Stream;
+
 import org.apache.tuweni.bytes.Bytes;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.hyperledger.besu.evm.operation.AddModOperation;
-import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
-import org.hyperledger.besu.evm.word.Word;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +46,8 @@ class AddModOperationTest {
 
     final var expected = originalAddMod(operand1, operand2, modulus);
 
-    final var frame = new TestMessageFrameBuilder()
+    final var frame =
+        new TestMessageFrameBuilder()
             .pushStackItem(Word.of(modulus.toArrayUnsafe()))
             .pushStackItem(Word.of(operand2.toArrayUnsafe()))
             .pushStackItem(Word.of(operand1.toArrayUnsafe()))

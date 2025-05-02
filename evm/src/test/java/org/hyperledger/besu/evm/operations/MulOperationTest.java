@@ -24,8 +24,22 @@ import java.math.BigInteger;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class MulOperationTest {
+class MulOperationTest extends BaseNumericTest {
+
+  @ParameterizedTest
+  @MethodSource("provideBigIntegerTestCases")
+  void testMulOperation(final BigInteger a, final BigInteger b) {
+    final BigInteger expected = a.multiply(b).and(MASK_256_BITS);
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+    MulOperation.staticOperation(frame);
+    final var result = frame.stack().popUnsafe();
+    assertThat(result)
+        .withFailMessage("Expected %d * %d = %d but got %d", a, b, expected, result)
+        .isEqualTo(expected);
+  }
 
   @Test
   void testMulOperation() {

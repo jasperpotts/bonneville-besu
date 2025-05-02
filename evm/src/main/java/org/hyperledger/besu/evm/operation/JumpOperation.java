@@ -20,10 +20,6 @@ import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
-import org.apache.tuweni.bytes.Bytes;
-
-import java.math.BigInteger;
-
 /** The Jump operation. */
 public class JumpOperation extends AbstractFixedCostOperation {
 

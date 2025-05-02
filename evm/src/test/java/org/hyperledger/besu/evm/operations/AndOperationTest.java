@@ -21,9 +21,24 @@ import org.hyperledger.besu.evm.operation.AndOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.word.Word63;
-import org.junit.jupiter.api.Test;
 
-class AndOperationTest {
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+public class AndOperationTest extends BaseNumericTest {
+
+  @ParameterizedTest
+  @MethodSource("provideWordTestCases")
+  void testAndOperation(final Word a, final Word b) {
+    final Word expected = a.and(b);
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+    AndOperation.staticOperation(frame);
+    final var result = frame.stack2().popUnsafe();
+    assertThat(result)
+        .withFailMessage("Expected %s & %s = %s but got %s", a, b, expected, result)
+        .isEqualTo(expected);
+  }
 
   @Test
   void testAndOperation2And10() {

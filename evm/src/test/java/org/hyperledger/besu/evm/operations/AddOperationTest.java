@@ -22,6 +22,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.operation.AddOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -32,10 +33,7 @@ class AddOperationTest extends BaseNumericTest {
   @MethodSource("provideWordTestCases")
   void testAdd(final Word a, final Word b) {
     final Word expected = a.add(b);
-    final var frame = new TestMessageFrameBuilder()
-            .pushStackItem(a)
-            .pushStackItem(b)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(a).pushStackItem(b).build();
     final var op = new AddOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
     final var sum = frame.stack2().popUnsafe();

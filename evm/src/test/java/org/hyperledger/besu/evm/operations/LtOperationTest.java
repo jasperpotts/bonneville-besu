@@ -23,8 +23,22 @@ import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class LtOperationTest {
+class LtOperationTest extends BaseNumericTest {
+
+  @ParameterizedTest
+  @MethodSource("provideBigIntegerTestCases")
+  void testLtOperation(final BigInteger a, final BigInteger b) {
+    final BigInteger expected = a.compareTo(b) < 0 ? BigInteger.ONE : BigInteger.ZERO;
+    final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+    LtOperation.staticOperation(frame);
+    final var result = frame.stack().popUnsafe();
+    assertThat(result)
+        .withFailMessage("Expected %d < %d = %d but got %d", a, b, expected, result)
+        .isEqualTo(expected);
+  }
 
   @Test
   void testLtOperationLeftLesser() {
