@@ -72,6 +72,8 @@ public interface Word {
 
   Word mod(final Word other);
 
+  Word and(final Word other);
+
   // Given some byte array, construct the most optional Word (Word63 or Word256)
   static Word of(final byte[] bytes) {
     // Find the first byte which is not zero

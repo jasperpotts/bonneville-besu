@@ -19,6 +19,7 @@ import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The And operation. */
 public class AndOperation extends AbstractFixedCostOperation {
@@ -48,13 +49,9 @@ public class AndOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack();
+    final var stack = frame.stack2();
     stack.checkStackForPop(2);
-    final BigInteger value0 = stack.popUnsafe();
-    final BigInteger value1 = stack.popUnsafe();
-    final BigInteger result = value0.and(value1).and(MASK_256_BITS);
-    stack.pushUnsafe(result);
-
+    stack.pushUnsafe(stack.popUnsafe().and(stack.popUnsafe()));
     return andSuccess;
   }
 }

@@ -19,9 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.hyperledger.besu.evm.operation.AndOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
-
-import java.math.BigInteger;
-
+import org.hyperledger.besu.evm.word.Word;
+import org.hyperledger.besu.evm.word.Word63;
 import org.junit.jupiter.api.Test;
 
 class AndOperationTest {
@@ -30,35 +29,35 @@ class AndOperationTest {
   void testAndOperation2And10() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(new Word63(2))
+            .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(2));
+    final var result = frame.stack2().popUnsafe();
+    assertThat(result).isEqualTo(new Word63(2));
   }
 
   @Test
   void testAndOperation0And10() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ZERO)
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(Word.ZERO)
+            .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(0));
+    final var result = frame.stack2().popUnsafe();
+    assertThat(result).isEqualTo(Word.ZERO);
   }
 
   @Test
   void testAndOperation255And10() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(new BigInteger(String.valueOf(255)))
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(new Word63(255))
+            .pushStackItem(new Word63(10))
             .build();
     AndOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(BigInteger.valueOf(10));
+    final var result = frame.stack2().popUnsafe();
+    assertThat(result).isEqualTo(new Word63(10));
   }
 }

@@ -537,55 +537,23 @@ class WordTest {
         assertThat(Word.MAX.mod(TWO)).isEqualTo(Word.ONE);
     }
 
+    /*************************************************************************
+     * Tests for ANDing
+     ************************************************************************/
 
-//    @ParameterizedTest
-//    @MethodSource("smallUnsignedLongs")
-//    void addSmallUnsignedLongs(final long a, final long b) {
-//        Word word1 = new Word63(a);
-//        Word word2 = new Word63(b);
-//        Word sum = word1.add(word2);
-//        assertThat(sum).isEqualTo(new Word63(a + b));
-//    }
-//
-//    @Test
-//    void addLargeUnsignedLongsNonOverflow() {
-//        Word word1 = Word.ofHexString("0xFFFFFFFFFFFFFFFE");
-//        System.out.println(word1);
-//        Word word2 = Word.ofHexString("0x0000000000000001");
-//        Word sum = word1.add(word2);
-//        assertThat(sum).isEqualTo(Word.ofHexString("0xFFFFFFFFFFFFFFFF"));
-//    }
-//
-//    @Test
-//    void addUnsignedLongsOverflow() {
-//        Word word1 = Word.ofHexString("0xFFFFFFFFFFFFFFFF");
-//        Word word2 = Word.ofHexString("0x0000000000000001");
-//        Word sum = word1.add(word2);
-//        assertThat(sum).isEqualTo(Word.ofHexString("0x010000000000000000"));
-//    }
-//
-//    @Test
-//    void moreThan32BytesTruncatedTo32Bytes() {
-//        Word word = Word.ofHexString("0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAB");
-//        assertThat(word).isEqualTo(Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAB"));
-//    }
-//
-//    @Test
-//    void moreThan32BytesTruncatedTo32BytesNegative() {
-//        Word word = Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAB");
-//        assertThat(word).isEqualTo(Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAB"));
-//    }
-//
-//    private static Stream<Arguments> smallUnsignedLongs() {
-//        return Stream.of(
-//                Arguments.of(0L, 0L),        // Add 0 and 0
-//                Arguments.of(0L, 1L),        // Add 0 and 1
-//                Arguments.of(1L, 0L),        // Add 1 and 0
-//                Arguments.of(1L, 1L),        // Add 1 and 1
-//                Arguments.of(15L, 1L),       // add 15 and 1
-//                Arguments.of(255L, 255L),    // Fits in 8 bits
-//                Arguments.of(65535L, 255L)); // Fits in 16 bits
-//    }
+    @ParameterizedTest
+    @MethodSource("values")
+    void andWithZero(final Word word) {
+        assertThat(word.and(Word.ZERO)).isEqualTo(Word.ZERO);
+    }
+
+    @ParameterizedTest
+    @MethodSource("values")
+    void andWithSelf(final Word word) {
+        assertThat(word.and(word)).isEqualTo(word);
+    }
+
+    // TODO Need more AND tests.
 
     private static Stream<Arguments> differentValues() {
         return Stream.of(

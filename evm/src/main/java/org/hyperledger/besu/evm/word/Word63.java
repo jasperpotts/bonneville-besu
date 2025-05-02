@@ -128,7 +128,7 @@ public class Word63 implements Word {
     }
 
     // If we fell through to here, we need to use 256-bit math
-    return new Word256(BigInteger.valueOf(this.value)).add(other);
+    return as256Bit().add(other);
   }
 
   @Override
@@ -137,7 +137,7 @@ public class Word63 implements Word {
       final var result = this.value - ((Word63) other).value;
       if (result >=0) return new Word63(result);
     }
-    return new Word256(BigInteger.valueOf(this.value)).subtract(other);
+    return as256Bit().subtract(other);
   }
 
   @Override
@@ -150,7 +150,7 @@ public class Word63 implements Word {
         // Overflow, will need to promote to 256-bit. Fall through.
       }
     }
-    return new Word256(BigInteger.valueOf(this.value)).multiply(other);
+    return as256Bit().multiply(other);
   }
 
   @Override
@@ -163,7 +163,7 @@ public class Word63 implements Word {
       final var result = this.value / divisor;
       if (result >= 0) return new Word63(result);
     }
-    return new Word256(BigInteger.valueOf(this.value)).divide(other);
+    return as256Bit().divide(other);
   }
 
   @Override
@@ -176,7 +176,15 @@ public class Word63 implements Word {
       final var result = this.value % divisor;
       if (result >= 0) return new Word63(result);
     }
-    return new Word256(BigInteger.valueOf(this.value)).mod(other);
+    return as256Bit().mod(other);
+  }
+
+  @Override
+  public Word and(final Word other) {
+    if (other.is63Bit()) {
+      return new Word63(this.value & ((Word63) other).value);
+    }
+    return as256Bit().and(other);
   }
 
   @Override

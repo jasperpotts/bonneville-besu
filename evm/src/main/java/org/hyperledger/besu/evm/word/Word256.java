@@ -137,6 +137,11 @@ public class Word256 implements Word {
   }
 
   @Override
+  public Word and(final Word other) {
+    return new Word256(value.and(other.as256Bit().value));
+  }
+
+  @Override
   public String toString() {
     return value.toString(2);
   }
