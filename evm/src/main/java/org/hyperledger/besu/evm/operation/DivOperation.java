@@ -19,6 +19,7 @@ import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 
 import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Div operation. */
 public class DivOperation extends AbstractFixedCostOperation {
@@ -48,18 +49,9 @@ public class DivOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final var stack = frame.stack();
+    final var stack = frame.stack2();
     stack.checkStackForPop(2);
-    final BigInteger value0 = stack.popUnsafe();
-    final BigInteger value1 = stack.popUnsafe();
-
-    final BigInteger result;
-    if (value0.equals(BigInteger.ZERO) || value1.equals(BigInteger.ZERO)) {
-      result = BigInteger.ZERO; // Division by zero yields 0
-    } else {
-      result = value0.divide(value1).and(MASK_256_BITS);
-    }
-    stack.pushUnsafe(result);
+    stack.pushUnsafe(stack.popUnsafe().divide(stack.popUnsafe()));
     return divSuccess;
   }
 }
