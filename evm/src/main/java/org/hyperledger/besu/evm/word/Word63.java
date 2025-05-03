@@ -148,18 +148,27 @@ public class Word63 implements Word {
 
   @Override
   public Word divide(final Word other) {
+    if (isZero() || other.isZero()) return other;
+
     if (other.is63Bit()) {
       final var divisor = ((Word63) other).value;
-      if (divisor == 0) {
-        return Word.ZERO; // EVM Semantics
-      }
       final var result = this.value / divisor;
       if (result >= 0) return new Word63(result);
     }
     return as256Bit().divide(other);
   }
 
-  // TODO sdiv
+  @Override
+  public Word signedDivide(final Word other) {
+    if (isZero() || other.isZero()) return ZERO;
+
+    if (other.is63Bit()) {
+      // neither this nor other is negative so normal div works
+      return new Word63(value / ((Word63)other).value);
+    }
+
+    return as256Bit().signedDivide(other);
+  }
 
   @Override
   public Word mod(final Word other) {
@@ -196,6 +205,13 @@ public class Word63 implements Word {
       return new Word63(this.value & ((Word63) other).value);
     }
     return as256Bit().and(other);
+  }
+
+  @Override
+  public Word shiftLeft(final int shift) {
+    final var shifted = value << shift;
+    if (shifted >= 0) return new Word63(shifted);
+    return as256Bit().shiftLeft(shift);
   }
 
   @Override

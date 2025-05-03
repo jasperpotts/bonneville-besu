@@ -17,61 +17,60 @@ package org.hyperledger.besu.evm.operations;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.math.BigInteger;
 import org.hyperledger.besu.evm.operation.SDivOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
-
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SDivOperationTest extends BaseNumericTest {
 
-  //  @ParameterizedTest
-  //  @MethodSource("provideBigIntegerTestCases")
-  //  void testSDivOperationMany(final BigInteger a, final BigInteger b) {
-  //      final BigInteger expected = (a.equals(BigInteger.ZERO) || b.equals(BigInteger.ZERO))
-  //          ? BigInteger.ZERO
-  //          : toSigned(a).divide(toSigned(b)).and(MASK_256_BITS);
-  //      final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
-  //      SDivOperation.staticOperation(frame);
-  //      final var result = frame.stack().popUnsafe();
-  //      assertThat(result)
-  //          .withFailMessage("Expected %d/%d = %d but got %d", a, b, expected, result)
-  //          .isEqualTo(expected);
-  //    }
+    @ParameterizedTest
+    @MethodSource("provideWordTestCases")
+    void testSDivOperationMany(final Word a, final Word b) {
+        final Word expected = (a.equals(Word.ZERO) || b.equals(Word.ZERO))
+            ? Word.ZERO
+            : a.signedDivide(b);
+        final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
+        SDivOperation.staticOperation(frame);
+        final var result = frame.stack().popUnsafe();
+        assertThat(result)
+            .withFailMessage("Expected %s/%s = %s but got %s", a, b, expected, result)
+            .isEqualTo(expected);
+      }
 
   @Test
   void testSDivOperation() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(TWO)
+            .pushStackItem(TEN)
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(Word.of(10 / 2));
+    assertThat(result).isEqualTo(Word.of(5));
   }
 
   @Test
   void testSDivOperationWithNegativeNumbers() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.valueOf(-3).abs())
-            .pushStackItem(BigInteger.valueOf(9))
+            .pushStackItem(Word.of(BigInteger.valueOf(-3).abs()))
+            .pushStackItem(Word.of(9))
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(new Word256(BigInteger.valueOf(9 / -3).abs()));
+    assertThat(result).isEqualTo(Word.of(BigInteger.valueOf(-3).abs()));
   }
 
   @Test
   void testSDivOperationWithZeroDenominator() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ZERO)
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(Word.ZERO)
+            .pushStackItem(TEN)
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -82,23 +81,23 @@ class SDivOperationTest extends BaseNumericTest {
   void testSDivOperationWithOverflow() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.valueOf(-1).abs())
-            .pushStackItem(BigInteger.ONE.shiftLeft(255)) // -2^255
+            .pushStackItem(Word.of(BigInteger.valueOf(-1).abs()))
+            .pushStackItem(Word.ONE.shiftLeft(255)) // -2^255
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(new Word256(BigInteger.ONE.shiftLeft(255)));
+    assertThat(result).isEqualTo(Word.ONE.shiftLeft(255));
   }
 
   @Test
   void testSDivOperationWithPositiveOverflow() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ONE)
-            .pushStackItem(BigInteger.ONE.shiftLeft(255)) // 2^255
+            .pushStackItem(Word.ONE)
+            .pushStackItem(Word.ONE.shiftLeft(255)) // 2^255
             .build();
     SDivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(new Word256(BigInteger.ONE.shiftLeft(255)));
+    assertThat(result).isEqualTo(Word.ONE.shiftLeft(255));
   }
 }

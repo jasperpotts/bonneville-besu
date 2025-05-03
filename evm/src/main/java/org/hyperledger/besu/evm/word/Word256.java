@@ -121,10 +121,22 @@ public class Word256 implements Word {
 
   @Override
   public Word divide(final Word other) {
-    if (other.isZero()) {
-      return Word.ZERO; // EVM semantics
-    }
+    if (isZero() || other.isZero()) return Word.ZERO; // EVM semantics
     return new Word256(value.divide(other.as256Bit().value));
+  }
+
+  @Override
+  public Word signedDivide(final Word other) {
+    if (isZero() || other.isZero()) return Word.ZERO; // EVM semantics
+
+    // None of the BigDecimals stored within Word256 is negative. But since this us a signed division operation,
+    // we need to possibly treat one or the other as negative. We can know if it is negative if there are 256
+    // bits, and if the sign bit is set. If neither are negative, we'll just do normal division. Otherwise,
+    // each signed value must be treated as signed for math purposes.
+    final var otherValue = other.as256Bit().value;
+    final var dividend = value.testBit(255) ? value.negate() : value;
+    final var divisor = otherValue.testBit(255) ? otherValue.negate() : otherValue;
+    return new Word256(dividend.divide(divisor));
   }
 
   @Override
@@ -146,6 +158,12 @@ public class Word256 implements Word {
   @Override
   public Word and(final Word other) {
     return new Word256(value.and(other.as256Bit().value));
+  }
+
+
+  @Override
+  public Word shiftLeft(final int shift) {
+    return new Word256(value.shiftLeft(shift));
   }
 
   @Override

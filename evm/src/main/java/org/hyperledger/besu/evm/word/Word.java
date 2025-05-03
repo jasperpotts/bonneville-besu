@@ -78,9 +78,13 @@ public interface Word {
 
   Word divide(final Word other);
 
+  Word signedDivide(final Word other);
+
   Word mod(final Word other);
 
   Word and(final Word other);
+
+  Word shiftLeft(final int shift);
 
   String toHexString();
 
