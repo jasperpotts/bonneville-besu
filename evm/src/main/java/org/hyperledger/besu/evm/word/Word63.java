@@ -100,6 +100,11 @@ public class Word63 implements Word {
   }
 
   @Override
+  public BigInteger asBigInteger() {
+    return BigInteger.valueOf(value);
+  }
+
+  @Override
   public byte[] asByteArray() {
     if (value == 0) {
       return new byte[0];
@@ -161,27 +166,26 @@ public class Word63 implements Word {
   @Override
   public Word signedDivide(final Word other) {
     if (isZero() || other.isZero()) return ZERO;
-
-    if (other.is63Bit()) {
-      // neither this nor other is negative so normal div works
-      return new Word63(value / ((Word63) other).value);
-    }
-
-    return as256Bit().signedDivide(other);
+    return other.is63Bit()
+        ? new Word63(value / ((Word63) other).value)
+        : as256Bit().signedDivide(other);
   }
 
   @Override
   public Word mod(final Word other) {
     if (other.isZero()) return Word.ZERO; // EVM Semantics
-    if (other.is63Bit()) {
-      final var divisor = ((Word63) other).value;
-      final var result = this.value % divisor;
-      if (result >= 0) return new Word63(result);
-    }
-    return as256Bit().mod(other);
+    return other.is63Bit()
+        ? new Word63(this.value % ((Word63) other).value)
+        : as256Bit().mod(other);
   }
 
-  // TODO smod
+  @Override
+  public Word signedMod(final Word other) {
+    if (isZero() || other.isZero()) return ZERO;
+    return other.is63Bit()
+        ? new Word63(value % ((Word63) other).value)
+        : as256Bit().signedMod(other);
+  }
 
   @Override
   public Word addMod(final Word other, final Word mod) {

@@ -46,6 +46,8 @@ public interface Word {
 
   Word256 as256Bit();
 
+  BigInteger asBigInteger();
+
   // Returns the fewest bytes possible to represent the number
   byte[] asByteArray();
 
@@ -81,6 +83,8 @@ public interface Word {
   Word signedDivide(final Word other);
 
   Word mod(final Word other);
+
+  Word signedMod(final Word other);
 
   Word and(final Word other);
 

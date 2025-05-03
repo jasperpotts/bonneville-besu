@@ -546,6 +546,59 @@ class WordTest {
   }
 
   /*************************************************************************
+   * Tests for SIGNED MODDING
+   ************************************************************************/
+
+  @ParameterizedTest
+  @MethodSource("values")
+  void signedModByZero(final Word word) {
+    assertThat(word.signedMod(Word.ZERO)).isEqualTo(Word.ZERO);
+  }
+
+  @ParameterizedTest
+  @MethodSource("values")
+  void signedModZero(final Word word) {
+    assertThat(Word.ZERO.signedMod(word)).isEqualTo(Word.ZERO);
+  }
+
+  @Test
+  void testSignedMod() {
+    final var ten = new Word63(10);
+    final var negativeTen =
+        Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6");
+    final var nine = new Word63(9);
+    final var negativeNine =
+        Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7");
+
+    final var negativeOne =
+        Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    final var negativeTwo =
+        Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE");
+    //    final var negativeFive =
+    // Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFB");
+    //    final var minNegative =
+    // Word.ofHexString("0x8000000000000000000000000000000000000000000000000000000000000000");
+    //    final var minNegativeLessOne =
+    // Word.ofHexString("0x8000000000000000000000000000000000000000000000000000000000000001");
+
+    // In all cases where the mod would result in 0, we get the same answer regardless of the signs
+    // of the operands
+    assertThat(negativeTen.signedMod(TWO)).isEqualTo(Word.ZERO);
+    assertThat(negativeTen.signedMod(negativeTwo)).isEqualTo(Word.ZERO);
+    assertThat(ten.signedMod(TWO)).isEqualTo(Word.ZERO);
+    assertThat(ten.signedMod(negativeTwo)).isEqualTo(Word.ZERO);
+
+    assertThat(negativeNine.signedMod(TWO)).isEqualTo(negativeOne);
+    assertThat(negativeNine.signedMod(negativeTwo)).isEqualTo(negativeOne);
+    assertThat(nine.signedMod(TWO)).isEqualTo(Word.ONE);
+    assertThat(nine.signedMod(negativeTwo)).isEqualTo(Word.ONE);
+
+    //    assertThat(Word.MAX.mod(TWO)).isEqualTo(Word.ONE);
+    //    assertThat(minNegative.signedMod(TWO)).isEqualTo(Word.ZERO);
+    //    assertThat(minNegativeLessOne.signedMod(negativeFive)).isEqualTo(Word.ONE);
+  }
+
+  /*************************************************************************
    * Tests for ANDing
    ************************************************************************/
 

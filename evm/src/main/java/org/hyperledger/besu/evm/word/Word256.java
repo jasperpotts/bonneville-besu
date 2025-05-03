@@ -18,6 +18,7 @@ package org.hyperledger.besu.evm.word;
 import java.math.BigInteger;
 
 public class Word256 implements Word {
+  private static final BigInteger TWO_TO_THE_256 = BigInteger.ONE.shiftLeft(256);
   final BigInteger value;
 
   public Word256(final BigInteger b) {
@@ -91,6 +92,11 @@ public class Word256 implements Word {
   }
 
   @Override
+  public BigInteger asBigInteger() {
+    return value;
+  }
+
+  @Override
   public byte[] asByteArray() {
     if (value.equals(BigInteger.ZERO)) {
       return new byte[0];
@@ -130,22 +136,33 @@ public class Word256 implements Word {
     if (isZero() || other.isZero()) return Word.ZERO; // EVM semantics
 
     // None of the BigDecimals stored within Word256 is negative. But since this us a signed
-    // division operation,
-    // we need to possibly treat one or the other as negative. We can know if it is negative if
-    // there are 256
-    // bits, and if the sign bit is set. If neither are negative, we'll just do normal division.
-    // Otherwise,
-    // each signed value must be treated as signed for math purposes.
+    // division operation, we need to possibly treat one or the other as negative. We can
+    // know if it is negative if there are 256 bits, and if the sign bit is set. If neither
+    // are negative, we'll just do normal division. Otherwise, each signed value must be
+    // treated as signed for math purposes.
     final var otherValue = other.as256Bit().value;
-    final var dividend = value.testBit(255) ? value.negate() : value;
-    final var divisor = otherValue.testBit(255) ? otherValue.negate() : otherValue;
-    return new Word256(dividend.divide(divisor));
+    final var dividend = value.testBit(255) ? toSigned256(value) : value;
+    final var divisor = otherValue.testBit(255) ? toSigned256(otherValue) : otherValue;
+    return new Word256(toUnsigned256(dividend.divide(divisor)));
   }
 
   @Override
   public Word mod(final Word other) {
     if (other.isZero()) return Word.ZERO; // EVM Semantics
     return new Word256(value.mod(other.as256Bit().value));
+  }
+
+  @Override
+  public Word signedMod(final Word other) {
+    // If either is zero, return ZERO. Mod by zero is zero as per the Ethereum Yellow Paper
+    if (isZero() || other.isZero()) return Word.ZERO;
+
+    // SMOD(x, y) = sign(x) * (abs(x) mod abs(y)), if y ≠ 0, otherwise 0.
+    final var signed = value.testBit(255);
+    final var dividend = toSigned256(value);
+    final var divisor = toSigned256(other.as256Bit().value);
+    final var modResult = dividend.abs().mod(divisor.abs());
+    return new Word256(signed ? toUnsigned256(modResult.negate()) : modResult);
   }
 
   @Override
@@ -176,7 +193,11 @@ public class Word256 implements Word {
     return value.toString(2);
   }
 
-  public BigInteger asBigInteger() {
-    return value;
+  private static BigInteger toSigned256(final BigInteger value) {
+    return value.testBit(255) ? value.subtract(TWO_TO_THE_256) : value;
+  }
+
+  private static BigInteger toUnsigned256(final BigInteger value) {
+    return value.testBit(255) ? value.add(TWO_TO_THE_256) : value;
   }
 }
