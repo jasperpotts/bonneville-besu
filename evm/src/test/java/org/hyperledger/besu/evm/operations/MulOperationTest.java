@@ -20,9 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.hyperledger.besu.evm.operation.MulOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
 
-import java.math.BigInteger;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -32,9 +30,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class MulOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testMulOperation(final BigInteger a, final BigInteger b) {
-    final Word expected = new Word256(a.multiply(b));
+  @MethodSource("provideWordTestCases")
+  void testMulOperation(final Word a, final Word b) {
+    final Word expected = a.multiply(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     MulOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -47,8 +45,8 @@ class MulOperationTest extends BaseNumericTest {
   void testMulOperation() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
+            .pushStackItem(TWO)
+            .pushStackItem(TEN)
             .build();
     MulOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -64,8 +62,8 @@ class MulOperationTest extends BaseNumericTest {
       final long expected = a * b;
       final var frame =
           new TestMessageFrameBuilder()
-              .pushStackItem(BigInteger.valueOf(a))
-              .pushStackItem(BigInteger.valueOf(b))
+              .pushStackItem(Word.of(a))
+              .pushStackItem(Word.of(b))
               .build();
       MulOperation.staticOperation(frame);
       final var result = frame.stack().popUnsafe();

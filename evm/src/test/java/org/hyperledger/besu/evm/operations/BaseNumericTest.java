@@ -22,6 +22,9 @@ public abstract class BaseNumericTest {
   static final BigInteger MAX_U256 = TWO_POW_256.subtract(BigInteger.ONE);
   private static final BigInteger MINUS_ONE = BigInteger.valueOf(-1);
 
+  static final Word TWO = Word.of(2);
+  static final Word TEN = Word.of(10);
+
   final GasCalculator gasCalculator = new BerlinGasCalculator();
 
   public static void main(final String[] args) {
@@ -100,9 +103,9 @@ public abstract class BaseNumericTest {
             Arguments.of(Word.ZERO, Word.ONE),
             Arguments.of(Word.ONE, Word.ZERO),
             Arguments.of(Word.ONE, Word.ONE),
-            Arguments.of(Word.of(10), Word.of(2)),
-            Arguments.of(Word.of(10), Word.of(3)),
-            Arguments.of(Word.of(2), Word.of(10)),
+            Arguments.of(TEN, TWO),
+            Arguments.of(TEN, Word.of(3)),
+            Arguments.of(TWO, TEN),
             Arguments.of(Word.of(17), Word.of(5)),
             Arguments.of(Word.of(100), Word.of(200)),
 
@@ -121,10 +124,10 @@ public abstract class BaseNumericTest {
             // Edge cases: max 256-bit value
             Arguments.of(Word.MAX, Word.ZERO),
             Arguments.of(Word.MAX, Word.ONE), // Overflow: 2^256 - 1 + 1 = 0 mod 2^256
-            Arguments.of(Word.MAX, Word.of(2)), // Overflow: 2^256 - 1 + 2 = 1 mod 2^256
+            Arguments.of(Word.MAX, TWO), // Overflow: 2^256 - 1 + 2 = 1 mod 2^256
             Arguments.of(Word.ZERO, Word.MAX),
             Arguments.of(Word.ONE, Word.MAX),
-            Arguments.of(Word.of(2), Word.MAX),
+            Arguments.of(TWO, Word.MAX),
             Arguments.of(Word.MAX, Word.MAX),
 
             // Some large numbers
