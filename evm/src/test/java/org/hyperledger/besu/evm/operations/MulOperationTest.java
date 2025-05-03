@@ -21,6 +21,7 @@ import org.hyperledger.besu.evm.operation.MulOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,25 @@ class MulOperationTest extends BaseNumericTest {
       final var result = frame.stack().popUnsafe();
       assertThat(result).isEqualTo(Word.of(expected));
     }
+  }
+
+  @Test
+  void testOverflow63Bit() {
+    // Choose two 63-bit values: 2^62 and 2^62
+    final long a = 1L << 62; // 2^62 = 4,611,686,018,427,387,904
+    final long b = 1L << 62; // 2^62
+    // Expected: 2^62 * 2^62 = 2^124
+    final BigInteger expected = BigInteger.valueOf(a).multiply(BigInteger.valueOf(b));
+    // Expected in hex: 0x100000000000000000000000000000000 (256-bit)
+
+    final var frame =
+        new TestMessageFrameBuilder().pushStackItem(Word.of(b)).pushStackItem(Word.of(a)).build();
+    MulOperation.staticOperation(frame);
+    final var result = frame.stack().popUnsafe();
+
+    assertThat(result)
+        .withFailMessage(
+            "Expected %s * %s = %s but got %s", Word.of(a), Word.of(b), Word.of(expected), result)
+        .isEqualTo(Word.of(expected));
   }
 }

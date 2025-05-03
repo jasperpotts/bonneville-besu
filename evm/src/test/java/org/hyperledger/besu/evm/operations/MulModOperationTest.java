@@ -18,15 +18,17 @@ package org.hyperledger.besu.evm.operations;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.hyperledger.besu.evm.operation.MulModOperation;
+import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.SplittableRandom;
 import java.util.stream.Stream;
+
 import org.apache.tuweni.bytes.Bytes;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.hyperledger.besu.evm.operation.MulModOperation;
-import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
-import org.hyperledger.besu.evm.word.Word;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,11 +43,7 @@ class MulModOperationTest {
     final var u2 = Word.ofHexString("0x64");
 
     final var frame =
-            new TestMessageFrameBuilder()
-                    .pushStackItem(u2)
-                    .pushStackItem(u1)
-                    .pushStackItem(u0)
-                    .build();
+        new TestMessageFrameBuilder().pushStackItem(u2).pushStackItem(u1).pushStackItem(u0).build();
 
     final var expected = Word.ofHexString("0x5c");
     MulModOperation.staticOperation(frame);
@@ -99,7 +97,7 @@ class MulModOperationTest {
   }
 
   // A helper class to store test case parameters
-  record MulModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) { }
+  record MulModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) {}
 
   /**
    * The original Besu implementation of the MULMOD operation.

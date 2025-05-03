@@ -81,7 +81,7 @@ class AddModOperationTest {
   }
 
   // A helper class to store test case parameters
-  record AddModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) { }
+  record AddModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) {}
 
   /**
    * The original Besu implementation of the ADDMOD operation.

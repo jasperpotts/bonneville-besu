@@ -133,7 +133,7 @@ public class Word63 implements Word {
   public Word multiply(final Word other) {
     if (other.is63Bit()) {
       try {
-        final var result = this.value * ((Word63) other).value;
+        final var result = Math.multiplyExact(this.value, ((Word63) other).value);
         if (result >= 0) return new Word63(result);
       } catch (ArithmeticException ignored) {
         // Overflow, will need to promote to 256-bit. Fall through.
