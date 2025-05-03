@@ -29,7 +29,7 @@ class DivOperationTest extends BaseNumericTest {
   @ParameterizedTest
   @MethodSource("provideWordTestCases")
   void testDivOperation(final Word a, final Word b) {
-    final Word expected = (a.equals(Word.ZERO) || b.equals(Word.ZERO)) ? Word.ZERO : a.divide(b);
+    final Word expected = a.divide(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     DivOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();

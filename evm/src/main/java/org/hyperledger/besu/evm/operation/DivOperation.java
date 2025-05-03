@@ -17,6 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Div operation. */
 public class DivOperation extends AbstractFixedCostOperation {
@@ -48,7 +49,9 @@ public class DivOperation extends AbstractFixedCostOperation {
   public static OperationResult staticOperation(final MessageFrame frame) {
     final var stack = frame.stack();
     stack.checkStackForPop(2);
-    stack.pushUnsafe(stack.popUnsafe().divide(stack.popUnsafe()));
+    final Word u0 = stack.popUnsafe();
+    final Word u1 = stack.popUnsafe();
+    stack.pushUnsafe(u0.divide(u1));
     return divSuccess;
   }
 }
