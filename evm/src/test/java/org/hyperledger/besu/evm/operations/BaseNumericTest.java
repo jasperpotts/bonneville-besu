@@ -4,7 +4,6 @@ import org.hyperledger.besu.evm.gascalculator.BerlinGasCalculator;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.word.Word256;
-import org.hyperledger.besu.evm.word.Word63;
 
 import java.math.BigInteger;
 import java.util.HexFormat;
@@ -16,7 +15,7 @@ import com.google.common.collect.Streams;
 import org.junit.jupiter.params.provider.Arguments;
 
 /** BaseNumericTest is a base class for testing numeric operations in the EVM. */
-public class BaseNumericTest {
+public abstract class BaseNumericTest {
   private static final Random RANDOM = new Random(90192749219704971L);
   static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
   private static final BigInteger TWO_POW_256 = BigInteger.ONE.shiftLeft(256);
@@ -88,24 +87,45 @@ public class BaseNumericTest {
 
   // Provide test cases for Word, pairs of interesting values
   static Stream<Arguments> provideWordTestCases() {
+    final var bigZero = new Word256(BigInteger.ZERO);
+    final var bigOne = new Word256(BigInteger.ONE);
+    final var bigTwo = new Word256(BigInteger.TWO);
+    final var bigThree = new Word256(BigInteger.valueOf(3));
+    final var bigTen = new Word256(BigInteger.valueOf(10));
+
     return Streams.concat(
         Stream.of(
             // Basic values
             Arguments.of(Word.ZERO, Word.ZERO),
-            Arguments.of(Word.ZERO, new Word63(1)),
-            Arguments.of(new Word63(1), Word.ZERO),
-            Arguments.of(new Word63(1), new Word63(1)),
-            Arguments.of(new Word63(10), new Word63(2)),
-            Arguments.of(new Word63(2), new Word63(10)),
-            Arguments.of(new Word63(100), new Word63(200)),
+            Arguments.of(Word.ZERO, Word.ONE),
+            Arguments.of(Word.ONE, Word.ZERO),
+            Arguments.of(Word.ONE, Word.ONE),
+            Arguments.of(Word.of(10), Word.of(2)),
+            Arguments.of(Word.of(10), Word.of(3)),
+            Arguments.of(Word.of(2), Word.of(10)),
+            Arguments.of(Word.of(17), Word.of(5)),
+            Arguments.of(Word.of(100), Word.of(200)),
+
+            // Using 256-bit words for small values
+            Arguments.of(bigZero, bigZero),
+            Arguments.of(bigZero, bigOne),
+            Arguments.of(bigOne, bigZero),
+            Arguments.of(bigOne, bigOne),
+            Arguments.of(bigTen, bigTwo),
+            Arguments.of(bigTen, bigThree),
+            Arguments.of(bigTwo, bigTen),
+            Arguments.of(new Word256(BigInteger.valueOf(17)), new Word256(BigInteger.valueOf(5))),
+            Arguments.of(
+                new Word256(BigInteger.valueOf(100)), new Word256(BigInteger.valueOf(200))),
 
             // Edge cases: max 256-bit value
             Arguments.of(Word.MAX, Word.ZERO),
-            Arguments.of(Word.MAX, new Word63(1)), // Overflow: 2^256 - 1 + 1 = 0 mod 2^256
-            Arguments.of(Word.MAX, new Word63(2)), // Overflow: 2^256 - 1 + 2 = 1 mod 2^256
+            Arguments.of(Word.MAX, Word.ONE), // Overflow: 2^256 - 1 + 1 = 0 mod 2^256
+            Arguments.of(Word.MAX, Word.of(2)), // Overflow: 2^256 - 1 + 2 = 1 mod 2^256
             Arguments.of(Word.ZERO, Word.MAX),
-            Arguments.of(new Word63(1), Word.MAX),
-            Arguments.of(new Word63(2), Word.MAX),
+            Arguments.of(Word.ONE, Word.MAX),
+            Arguments.of(Word.of(2), Word.MAX),
+            Arguments.of(Word.MAX, Word.MAX),
 
             // Some large numbers
             Arguments.of(
