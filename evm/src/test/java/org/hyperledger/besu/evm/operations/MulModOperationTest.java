@@ -15,36 +15,54 @@
 
 package org.hyperledger.besu.evm.operations;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.hyperledger.besu.evm.operation.AddModOperation;
-import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
-import org.hyperledger.besu.evm.word.Word;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.SplittableRandom;
 import java.util.stream.Stream;
-
 import org.apache.tuweni.bytes.Bytes;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.hyperledger.besu.evm.operation.MulModOperation;
+import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
+import org.hyperledger.besu.evm.word.Word;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class AddModOperationTest {
-  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
+class MulModOperationTest {
+  @Test
+  void testOverflow63Bits() {
+    // This test scenario was found during development
+    final var u0 = Word.ofHexString("0x04");
+    final var u1 = Word.ofHexString("0x5ab9db656ae92d81");
+    final var u2 = Word.ofHexString("0x64");
+
+    final var frame =
+            new TestMessageFrameBuilder()
+                    .pushStackItem(u2)
+                    .pushStackItem(u1)
+                    .pushStackItem(u0)
+                    .build();
+
+    final var expected = Word.ofHexString("0x5c");
+    MulModOperation.staticOperation(frame);
+    final var actual = frame.stack().popUnsafe();
+    assertThat(actual).isEqualTo(expected);
+  }
 
   @ParameterizedTest
   @MethodSource("randomTestCases")
-  void compareOriginal(final AddModTestCase testCase) {
+  void compareOriginal(final MulModTestCase testCase) {
     final Bytes operand1 = testCase.operand1;
     final Bytes operand2 = testCase.operand2;
     final Bytes modulus = testCase.modulus;
 
     Assumptions.assumeFalse(modulus.isZero());
 
-    final var expected = originalAddMod(operand1, operand2, modulus);
+    final var expected = originalMulMod(operand1, operand2, modulus);
 
     final var frame =
         new TestMessageFrameBuilder()
@@ -53,12 +71,12 @@ class AddModOperationTest {
             .pushStackItem(Word.of(operand1.toArrayUnsafe()))
             .build();
 
-    AddModOperation.staticOperation(frame);
+    MulModOperation.staticOperation(frame);
     final var actual = frame.stack().popUnsafe();
     assertEquals(expected, Bytes.wrap(actual.asArray32()));
   }
 
-  private static Stream<AddModTestCase> randomTestCases() {
+  private static Stream<MulModTestCase> randomTestCases() {
     SplittableRandom random = new SplittableRandom(3052025);
     return Stream.generate(
             () -> {
@@ -68,7 +86,7 @@ class AddModOperationTest {
               Bytes modulus = generateRandomBytes(random);
 
               // Return a test case object
-              return new AddModTestCase(operand1, operand2, modulus);
+              return new MulModTestCase(operand1, operand2, modulus);
             })
         .limit(10_000);
   }
@@ -81,17 +99,17 @@ class AddModOperationTest {
   }
 
   // A helper class to store test case parameters
-  record AddModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) { }
+  record MulModTestCase(Bytes operand1, Bytes operand2, Bytes modulus) { }
 
   /**
-   * The original Besu implementation of the ADDMOD operation.
+   * The original Besu implementation of the MULMOD operation.
    *
    * @param operand1 the first operand
    * @param operand2 the second operand
    * @param modulus the modulus
-   * @return the result of the addition modulo the modulus
+   * @return the result of the multiplication modulo the modulus
    */
-  public static Bytes originalAddMod(
+  public static Bytes originalMulMod(
       @NonNull final Bytes operand1, @NonNull final Bytes operand2, @NonNull final Bytes modulus) {
     if (modulus.isZero()) {
       return Bytes.EMPTY;
@@ -99,13 +117,16 @@ class AddModOperationTest {
       BigInteger b0 = new BigInteger(1, operand1.toArrayUnsafe());
       BigInteger b1 = new BigInteger(1, operand2.toArrayUnsafe());
       BigInteger b2 = new BigInteger(1, modulus.toArrayUnsafe());
-      BigInteger result = b0.add(b1).mod(b2).and(MASK_256_BITS);
+
+      BigInteger result = b0.multiply(b1).mod(b2);
       Bytes resultBytes = Bytes.wrap(result.toByteArray());
       if (resultBytes.size() > 32) {
         resultBytes = resultBytes.slice(resultBytes.size() - 32, 32);
       }
+
       final byte[] padding = new byte[32 - resultBytes.size()];
       Arrays.fill(padding, result.signum() < 0 ? (byte) 0xFF : 0x00);
+
       return Bytes.concatenate(Bytes.wrap(padding), resultBytes);
     }
   }

@@ -202,6 +202,25 @@ public class Word63 implements Word {
   }
 
   @Override
+  public Word multiplyMod(final Word other, final Word mod) {
+    if (other.is63Bit() && mod.is63Bit()) {
+      final var modulus = ((Word63) mod).value;
+      if (modulus == 0) return Word.ZERO; // EVM Semantics
+
+      try {
+        final var m = Math.multiplyExact(this.value, ((Word63) other).value);
+        if (m >= 0) {
+          final var result = m % modulus;
+          return new Word63(result);
+        }
+      } catch (ArithmeticException ignored) {
+        // Overflow, will need to promote to 256-bit. Fall through.
+      }
+    }
+    return as256Bit().multiplyMod(other, mod);
+  }
+
+  @Override
   public Word and(final Word other) {
     if (other.is63Bit()) {
       return new Word63(this.value & ((Word63) other).value);
