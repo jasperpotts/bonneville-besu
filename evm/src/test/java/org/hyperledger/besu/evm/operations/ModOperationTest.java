@@ -22,10 +22,6 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.operation.ModOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
-
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,9 +29,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class ModOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testModOperation(final BigInteger a, final BigInteger b) {
-    final Word expected = b.signum() == 0 ? Word.ZERO : new Word256(a.mod(b));
+  @MethodSource("provideWordTestCases")
+  void testModOperation(final Word a, final Word b) {
+    final Word expected = a.mod(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     final var op = new ModOperation(gasCalculator);
     op.executeFixedCostOperation(frame, mock(EVM.class));
@@ -47,11 +43,11 @@ class ModOperationTest extends BaseNumericTest {
 
   // Test BigInteger modulo function
   @Test
-  void testModByZero() {
+  void testModByZeroDividend() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ZERO) // Denominator (b)
-            .pushStackItem(BigInteger.TEN) // Numerator (a)
+            .pushStackItem(TEN) // Denominator (b)
+            .pushStackItem(Word.ZERO) // Numerator (a)
             .build();
     final var op = new ModOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
@@ -62,30 +58,13 @@ class ModOperationTest extends BaseNumericTest {
     assertThat(result.getPcIncrement()).isEqualTo(1);
   }
 
-  // Test BigInteger modulo function
+  // Test modulo function
   @Test
-  void testModByZeroSigned() {
+  void testModByZeroDivisor() {
     final var frame =
         new TestMessageFrameBuilder()
-            .pushStackItem(new BigInteger(-1, new byte[32])) // Denominator (b)
-            .pushStackItem(BigInteger.TEN) // Numerator (a)
-            .build();
-    final var op = new ModOperation(gasCalculator);
-    final var result = op.executeFixedCostOperation(frame, mock(EVM.class));
-    final var remainder = frame.stack().popUnsafe();
-    assertThat(remainder).isEqualTo(Word.ZERO);
-    assertThat(result.getGasCost()).isEqualTo(5);
-    assertThat(result.getHaltReason()).isNull();
-    assertThat(result.getPcIncrement()).isEqualTo(1);
-  }
-
-  // Test BigInteger modulo function
-  @Test
-  void testModByZeroSignedPos() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(new BigInteger(1, new byte[32])) // Denominator (b)
-            .pushStackItem(BigInteger.TEN) // Numerator (a)
+            .pushStackItem(Word.ZERO) // Denominator (b)
+            .pushStackItem(TEN) // Numerator (a)
             .build();
     final var op = new ModOperation(gasCalculator);
     final var result = op.executeFixedCostOperation(frame, mock(EVM.class));

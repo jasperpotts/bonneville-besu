@@ -141,9 +141,7 @@ public class Word256 implements Word {
 
   @Override
   public Word mod(final Word other) {
-    if (other.isZero()) {
-      return Word.ZERO; // EVM semantics
-    }
+    if (other.isZero()) return Word.ZERO; // EVM Semantics
     return new Word256(value.mod(other.as256Bit().value));
   }
 

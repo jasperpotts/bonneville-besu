@@ -172,11 +172,9 @@ public class Word63 implements Word {
 
   @Override
   public Word mod(final Word other) {
+    if (other.isZero()) return Word.ZERO; // EVM Semantics
     if (other.is63Bit()) {
       final var divisor = ((Word63) other).value;
-      if (divisor == 0) {
-        return Word.ZERO; // EVM Semantics
-      }
       final var result = this.value % divisor;
       if (result >= 0) return new Word63(result);
     }
