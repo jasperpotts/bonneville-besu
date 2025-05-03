@@ -148,7 +148,7 @@ public class Word63 implements Word {
 
   @Override
   public Word divide(final Word other) {
-    if (isZero() || other.isZero()) return other;
+    if (isZero() || other.isZero()) return ZERO;
 
     if (other.is63Bit()) {
       final var divisor = ((Word63) other).value;
@@ -164,7 +164,7 @@ public class Word63 implements Word {
 
     if (other.is63Bit()) {
       // neither this nor other is negative so normal div works
-      return new Word63(value / ((Word63)other).value);
+      return new Word63(value / ((Word63) other).value);
     }
 
     return as256Bit().signedDivide(other);

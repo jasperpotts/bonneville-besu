@@ -18,9 +18,6 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
-
-import java.math.BigInteger;
 
 /** The Mul operation. */
 public class MulOperation extends AbstractFixedCostOperation {

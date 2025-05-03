@@ -43,11 +43,7 @@ class MulOperationTest extends BaseNumericTest {
 
   @Test
   void testMulOperation() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(TWO)
-            .pushStackItem(TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TWO).pushStackItem(TEN).build();
     MulOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.of(20));
@@ -61,10 +57,7 @@ class MulOperationTest extends BaseNumericTest {
       final long b = rand.nextLong(0, 10_000);
       final long expected = a * b;
       final var frame =
-          new TestMessageFrameBuilder()
-              .pushStackItem(Word.of(a))
-              .pushStackItem(Word.of(b))
-              .build();
+          new TestMessageFrameBuilder().pushStackItem(Word.of(a)).pushStackItem(Word.of(b)).build();
       MulOperation.staticOperation(frame);
       final var result = frame.stack().popUnsafe();
       assertThat(result).isEqualTo(Word.of(expected));

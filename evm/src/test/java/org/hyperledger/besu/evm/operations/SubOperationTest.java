@@ -66,8 +66,7 @@ class SubOperationTest {
             // Edge cases: max 256-bit value and underflow
             Arguments.of(Word.MAX, Word.ZERO, Word.MAX),
             Arguments.of(Word.ZERO, Word.ONE, Word.MAX), // Underflow: 0 - 1 = 2^256 - 1
-            Arguments.of(
-                    Word.ONE, Word.of(2), Word.MAX), // Underflow: 1 - 2 = 2^256
+            Arguments.of(Word.ONE, Word.of(2), Word.MAX), // Underflow: 1 - 2 = 2^256
 
             // Large numbers
             Arguments.of(
