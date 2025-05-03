@@ -17,9 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-import org.hyperledger.besu.evm.word.Word256;
-
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The Sub (Subtract) operation. */
 public class SubOperation extends AbstractFixedCostOperation {
@@ -51,10 +49,9 @@ public class SubOperation extends AbstractFixedCostOperation {
   public static OperationResult staticOperation(final MessageFrame frame) {
     final var stack = frame.stack();
     stack.checkStackForPop(2);
-    final BigInteger value0 = stack.popUnsafe().as256Bit().asBigInteger();
-    final BigInteger value1 = stack.popUnsafe().as256Bit().asBigInteger();
-    final BigInteger result = value0.subtract(value1).and(MASK_256_BITS);
-    stack.pushUnsafe(new Word256(result));
+    final Word u0 = stack.popUnsafe();
+    final Word u1 = stack.popUnsafe();
+    stack.pushUnsafe(u0.subtract(u1));
     return subSuccess;
   }
 }

@@ -88,6 +88,10 @@ public interface Word {
     return new Word63(value);
   }
 
+  static Word of(final BigInteger value) {
+    return new Word256(value);
+  }
+
   // Given some byte array, construct the most optional Word (Word63 or Word256)
   static Word of(final byte[] bytes) {
     // Find the first byte which is not zero
