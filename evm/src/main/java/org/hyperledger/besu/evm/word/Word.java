@@ -51,6 +51,8 @@ public interface Word {
 
   Word256 as256Bit();
 
+  int asInteger();
+
   BigInteger asBigInteger();
 
   // Returns the fewest bytes possible to represent the number
@@ -104,6 +106,10 @@ public interface Word {
   Word and(final Word other);
 
   Word or(final Word other);
+
+  Word xor(final Word other);
+
+  Word not();
 
   Word shiftLeft(final int shift);
 

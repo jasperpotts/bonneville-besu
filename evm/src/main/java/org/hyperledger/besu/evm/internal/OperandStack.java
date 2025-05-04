@@ -21,7 +21,6 @@ import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.HexFormat;
 
 /** The Operand stack. */
 public class OperandStack extends FlexStack<Word> {
@@ -43,7 +42,6 @@ public class OperandStack extends FlexStack<Word> {
    */
   public final BigInteger popUnsafeSigned() {
     final BigInteger unsigned = popUnsafe().as256Bit().asBigInteger();
-    System.out.println("unsigned = " + HexFormat.of().formatHex(unsigned.toByteArray()));
     if (unsigned.testBit(255)) {
       // Step 2: Convert it to a two's complement representation
       byte[] bytes = unsigned.toByteArray();

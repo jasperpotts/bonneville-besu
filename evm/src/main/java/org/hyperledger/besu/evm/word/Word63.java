@@ -105,6 +105,11 @@ public class Word63 implements Word {
   }
 
   @Override
+  public int asInteger() {
+    return (int) value;
+  }
+
+  @Override
   public BigInteger asBigInteger() {
     return BigInteger.valueOf(value);
   }
@@ -261,10 +266,21 @@ public class Word63 implements Word {
   }
 
   @Override
+  public Word xor(final Word other) {
+    return other.is63Bit()
+        ? new Word63(this.value ^ ((Word63) other).value)
+        : as256Bit().xor(other);
+  }
+
+  @Override
+  public Word not() {
+    return new Word63(~this.value);
+  }
+
+  @Override
   public Word shiftLeft(final int shift) {
-    final var shifted = value << shift;
-    if (shifted >= 0) return new Word63(shifted);
-    return as256Bit().shiftLeft(shift);
+    int maxShift = Long.numberOfLeadingZeros(value);
+    return (shift < maxShift) ? new Word63(value << shift) : as256Bit().shiftLeft(shift);
   }
 
   @Override

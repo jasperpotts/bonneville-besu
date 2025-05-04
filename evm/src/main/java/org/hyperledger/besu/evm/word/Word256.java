@@ -96,6 +96,11 @@ public class Word256 implements Word {
   }
 
   @Override
+  public int asInteger() {
+    return value.intValue();
+  }
+
+  @Override
   public BigInteger asBigInteger() {
     return value;
   }
@@ -194,6 +199,16 @@ public class Word256 implements Word {
   @Override
   public Word or(final Word other) {
     return new Word256(value.or(other.as256Bit().value));
+  }
+
+  @Override
+  public Word xor(final Word other) {
+    return new Word256(value.xor(other.as256Bit().value));
+  }
+
+  @Override
+  public Word not() {
+    return new Word256(value.not());
   }
 
   @Override

@@ -51,8 +51,7 @@ public class JumpOperation extends AbstractFixedCostOperation {
   public static OperationResult staticOperation(final MessageFrame frame) {
     final var stack = frame.stack();
     stack.checkStackForPop(1);
-    final int jumpDestination = stack.popUnsafe().as256Bit().asBigInteger().intValue();
-
+    final int jumpDestination = stack.popUnsafe().asInteger();
     final Code code = frame.getCode();
     if (code.isJumpDestInvalid(jumpDestination)) {
       return invalidJumpResponse;

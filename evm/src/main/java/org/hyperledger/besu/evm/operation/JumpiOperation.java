@@ -19,8 +19,7 @@ import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.ExceptionalHaltReason;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
-
-import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word;
 
 /** The JUMPI operation. */
 public class JumpiOperation extends AbstractFixedCostOperation {
@@ -51,16 +50,18 @@ public class JumpiOperation extends AbstractFixedCostOperation {
    * @return the operation result
    */
   public static OperationResult staticOperation(final MessageFrame frame) {
-    final BigInteger dest = frame.popStackItemBigInteger();
-    final BigInteger condition = frame.popStackItemBigInteger();
+    final var stack = frame.stack();
+    stack.checkStackForPop(2);
+    final Word dest = stack.popUnsafe();
+    final Word condition = stack.popUnsafe();
 
     // If the condition is zero (false), no jump will be performed. Therefore, skip the test.
-    if (condition.equals(BigInteger.ZERO)) {
+    if (condition.isZero()) {
       return nojumpResponse;
     } else {
       final int jumpDestination;
       try {
-        jumpDestination = dest.intValue();
+        jumpDestination = dest.asInteger();
       } catch (final RuntimeException re) {
         return invalidJumpResponse;
       }
