@@ -17,6 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
@@ -52,10 +53,10 @@ public class LtOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     stack.checkStackForPop(2);
 
-    final BigInteger value0 = stack.popUnsafe().as256Bit().asBigInteger();
-    final BigInteger value1 = stack.popUnsafe().as256Bit().asBigInteger();
+    final Word value0 = stack.popUnsafe();
+    final Word value1 = stack.popUnsafe();
 
-    final BigInteger result = value0.compareTo(value1) < 0 ? BigInteger.ONE : BigInteger.ZERO;
+    final BigInteger result = value0.isLessThan(value1) ? BigInteger.ONE : BigInteger.ZERO;
     stack.pushUnsafe(new Word256(result));
 
     return ltSuccess;

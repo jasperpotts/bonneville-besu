@@ -21,8 +21,6 @@ import org.hyperledger.besu.evm.operation.LtOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,9 +28,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class LtOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testLtOperation(final BigInteger a, final BigInteger b) {
-    final Word expected = a.compareTo(b) < 0 ? Word.ONE : Word.ZERO;
+  @MethodSource("provideWordTestCases")
+  void testLtOperation(final Word a, final Word b) {
+    final Word expected = a.isLessThan(b) ? Word.ONE : Word.ZERO;
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -43,11 +41,7 @@ class LtOperationTest extends BaseNumericTest {
 
   @Test
   void testLtOperationLeftLesser() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TEN)
-            .pushStackItem(BigInteger.TWO)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).pushStackItem(TWO).build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ONE);
@@ -55,11 +49,7 @@ class LtOperationTest extends BaseNumericTest {
 
   @Test
   void testLtOperationLeftGreater() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TWO).pushStackItem(TEN).build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);
@@ -67,11 +57,7 @@ class LtOperationTest extends BaseNumericTest {
 
   @Test
   void testLtOperationLeftAndRightEqual() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TEN)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).pushStackItem(TEN).build();
     LtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);

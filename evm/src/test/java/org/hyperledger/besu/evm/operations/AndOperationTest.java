@@ -20,7 +20,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.hyperledger.besu.evm.operation.AndOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word63;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,23 +41,16 @@ public class AndOperationTest extends BaseNumericTest {
 
   @Test
   void testAndOperation2And10() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(new Word63(2))
-            .pushStackItem(new Word63(10))
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TWO).pushStackItem(TEN).build();
     AndOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(new Word63(2));
+    assertThat(result).isEqualTo(TWO);
   }
 
   @Test
   void testAndOperation0And10() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(Word.ZERO)
-            .pushStackItem(new Word63(10))
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.ZERO).pushStackItem(TEN).build();
     AndOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);
@@ -67,12 +59,9 @@ public class AndOperationTest extends BaseNumericTest {
   @Test
   void testAndOperation255And10() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(new Word63(255))
-            .pushStackItem(new Word63(10))
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.of(255)).pushStackItem(TEN).build();
     AndOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(new Word63(10));
+    assertThat(result).isEqualTo(TEN);
   }
 }

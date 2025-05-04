@@ -21,8 +21,6 @@ import org.hyperledger.besu.evm.operation.EqOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,9 +28,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class EqOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testEqOperation(final BigInteger a, final BigInteger b) {
-    final Word expected = a.equals(b) ? Word.ONE : Word.ZERO;
+  @MethodSource("provideWordTestCases")
+  void testEqOperation(final Word a, final Word b) {
+    final Word expected = a.isEqualTo(b) ? Word.ONE : Word.ZERO;
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     EqOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -43,11 +41,7 @@ class EqOperationTest extends BaseNumericTest {
 
   @Test
   void testEqOperationEqual() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TEN)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).pushStackItem(TEN).build();
     EqOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ONE);
@@ -56,10 +50,7 @@ class EqOperationTest extends BaseNumericTest {
   @Test
   void testEqOperationEqualWithZero() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ZERO)
-            .pushStackItem(BigInteger.ZERO)
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.ZERO).pushStackItem(Word.ZERO).build();
     EqOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ONE);
@@ -67,11 +58,7 @@ class EqOperationTest extends BaseNumericTest {
 
   @Test
   void testEqOperationNotEqual() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TWO).pushStackItem(TEN).build();
     EqOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);

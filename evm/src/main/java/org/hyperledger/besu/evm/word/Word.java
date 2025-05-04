@@ -103,6 +103,8 @@ public interface Word {
 
   Word and(final Word other);
 
+  Word or(final Word other);
+
   Word shiftLeft(final int shift);
 
   String toHexString();

@@ -21,15 +21,13 @@ import org.hyperledger.besu.evm.operation.IsZeroOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
 
-class IsZeroOperationTest {
+class IsZeroOperationTest extends BaseNumericTest {
 
   @Test
   void testIsZeroOperationZero() {
-    final var frame = new TestMessageFrameBuilder().pushStackItem(BigInteger.ZERO).build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(Word.ZERO).build();
     IsZeroOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ONE);
@@ -37,16 +35,7 @@ class IsZeroOperationTest {
 
   @Test
   void testIsZeroOperationNonZero() {
-    final var frame = new TestMessageFrameBuilder().pushStackItem(BigInteger.TEN).build();
-    IsZeroOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe();
-    assertThat(result).isEqualTo(Word.ZERO);
-  }
-
-  @Test
-  void testIsZeroOperationNegative() {
-    final var frame =
-        new TestMessageFrameBuilder().pushStackItem(new BigInteger(String.valueOf(-10))).build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).build();
     IsZeroOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);

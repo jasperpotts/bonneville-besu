@@ -20,9 +20,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.hyperledger.besu.evm.operation.OrOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
-import org.hyperledger.besu.evm.word.Word256;
-
-import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,9 +28,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class OrOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testOrOperation(final BigInteger a, final BigInteger b) {
-    final Word expected = new Word256(a.or(b));
+  @MethodSource("provideWordTestCases")
+  void testOrOperation(final Word a, final Word b) {
+    final Word expected = a.or(b);
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
@@ -45,10 +42,7 @@ class OrOperationTest extends BaseNumericTest {
   @Test
   void testOrOperation1And10() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ONE)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.ONE).pushStackItem(TEN).build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.of(11));
@@ -57,10 +51,7 @@ class OrOperationTest extends BaseNumericTest {
   @Test
   void testOrOperation0And10() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.ZERO)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.ZERO).pushStackItem(TEN).build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.of(10));
@@ -69,10 +60,7 @@ class OrOperationTest extends BaseNumericTest {
   @Test
   void testOrOperation255And10() {
     final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(new BigInteger(String.valueOf(255)))
-            .pushStackItem(BigInteger.TEN)
-            .build();
+        new TestMessageFrameBuilder().pushStackItem(Word.of(255)).pushStackItem(TEN).build();
     OrOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.of(255));

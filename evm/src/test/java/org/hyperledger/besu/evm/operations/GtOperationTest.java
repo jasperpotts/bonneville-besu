@@ -21,8 +21,6 @@ import org.hyperledger.besu.evm.operation.GtOperation;
 import org.hyperledger.besu.evm.testutils.TestMessageFrameBuilder;
 import org.hyperledger.besu.evm.word.Word;
 
-import java.math.BigInteger;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,12 +28,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 class GtOperationTest extends BaseNumericTest {
 
   @ParameterizedTest
-  @MethodSource("provideBigIntegerTestCases")
-  void testGtOperation(final BigInteger a, final BigInteger b) {
-    final BigInteger expected = a.compareTo(b) > 0 ? BigInteger.ONE : BigInteger.ZERO;
+  @MethodSource("provideWordTestCases")
+  void testGtOperation(final Word a, final Word b) {
+    final Word expected = a.isGreaterThan(b) ? Word.ONE : Word.ZERO;
     final var frame = new TestMessageFrameBuilder().pushStackItem(b).pushStackItem(a).build();
     GtOperation.staticOperation(frame);
-    final var result = frame.stack().popUnsafe().as256Bit().asBigInteger();
+    final var result = frame.stack().popUnsafe();
     assertThat(result)
         .withFailMessage("Expected %s > %s = %s but got %s", a, b, expected, result)
         .isEqualTo(expected);
@@ -43,11 +41,7 @@ class GtOperationTest extends BaseNumericTest {
 
   @Test
   void testGtOperationLeftGreater() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TWO)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TWO).pushStackItem(TEN).build();
     GtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ONE);
@@ -55,11 +49,7 @@ class GtOperationTest extends BaseNumericTest {
 
   @Test
   void testGtOperationLeftLesser() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TEN)
-            .pushStackItem(BigInteger.TWO)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).pushStackItem(TWO).build();
     GtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);
@@ -67,11 +57,7 @@ class GtOperationTest extends BaseNumericTest {
 
   @Test
   void testGtOperationLeftAndRightEqual() {
-    final var frame =
-        new TestMessageFrameBuilder()
-            .pushStackItem(BigInteger.TEN)
-            .pushStackItem(BigInteger.TEN)
-            .build();
+    final var frame = new TestMessageFrameBuilder().pushStackItem(TEN).pushStackItem(TEN).build();
     GtOperation.staticOperation(frame);
     final var result = frame.stack().popUnsafe();
     assertThat(result).isEqualTo(Word.ZERO);

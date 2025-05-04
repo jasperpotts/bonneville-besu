@@ -250,10 +250,14 @@ public class Word63 implements Word {
 
   @Override
   public Word and(final Word other) {
-    if (other.is63Bit()) {
-      return new Word63(this.value & ((Word63) other).value);
-    }
-    return as256Bit().and(other);
+    return other.is63Bit()
+        ? new Word63(this.value & ((Word63) other).value)
+        : as256Bit().and(other);
+  }
+
+  @Override
+  public Word or(final Word other) {
+    return other.is63Bit() ? new Word63(this.value | ((Word63) other).value) : as256Bit().or(other);
   }
 
   @Override

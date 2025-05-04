@@ -192,6 +192,11 @@ public class Word256 implements Word {
   }
 
   @Override
+  public Word or(final Word other) {
+    return new Word256(value.or(other.as256Bit().value));
+  }
+
+  @Override
   public Word shiftLeft(final int shift) {
     return new Word256(value.shiftLeft(shift));
   }
