@@ -95,6 +95,11 @@ public class Word63 implements Word {
   }
 
   @Override
+  public int numBytes() {
+    return value == 0 ? 0 : (63 - Long.numberOfLeadingZeros(value) + 7) / 8;
+  }
+
+  @Override
   public Word256 as256Bit() {
     return new Word256(BigInteger.valueOf(value));
   }
@@ -218,6 +223,29 @@ public class Word63 implements Word {
       }
     }
     return as256Bit().multiplyMod(other, mod);
+  }
+
+  @Override
+  public Word modPow(final Word exponent) {
+    if (exponent.is63Bit()) {
+      long expValue = ((Word63) exponent).value;
+      // Optimize for small exponents
+      if (expValue == 0) return Word.ONE;
+      if (expValue == 1) return this;
+      if (expValue <= 63 && value <= Integer.MAX_VALUE) {
+        try {
+          long result = 1;
+          for (long i = 0; i < expValue; i++) {
+            result = Math.multiplyExact(result, value);
+          }
+          return new Word256(BigInteger.valueOf(result));
+        } catch (ArithmeticException ignored) {
+          // Overflow, fall through to 256-bit
+        }
+      }
+    }
+    // Use 256-bit arithmetic for large exponents or overflow
+    return as256Bit().modPow(exponent);
   }
 
   @Override

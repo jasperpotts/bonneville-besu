@@ -19,7 +19,10 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 public interface Word {
-  static final BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
+  // These two things shouldn't actually be in the interface....
+  BigInteger TWO_TO_THE_256 = BigInteger.ONE.shiftLeft(256);
+  BigInteger MASK_256_BITS = BigInteger.valueOf(2).pow(256).subtract(BigInteger.ONE);
+
   Word ZERO = new Word63(0L);
   Word ONE = new Word63(1L);
   Word MAX = Word.ofHexString("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
@@ -43,6 +46,8 @@ public interface Word {
   boolean isNotEqualTo(final Word other);
 
   boolean is63Bit();
+
+  int numBytes();
 
   Word256 as256Bit();
 
@@ -87,6 +92,14 @@ public interface Word {
   Word addMod(final Word other, final Word mod);
 
   Word multiplyMod(final Word other, final Word mod);
+
+  /**
+   * Computes this word raised to the power of the exponent.
+   *
+   * @param exponent The exponent to raise this word to
+   * @return The result of this^exponent % 2^256
+   */
+  Word modPow(final Word exponent);
 
   Word and(final Word other);
 

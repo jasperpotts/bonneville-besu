@@ -18,7 +18,6 @@ package org.hyperledger.besu.evm.word;
 import java.math.BigInteger;
 
 public class Word256 implements Word {
-  private static final BigInteger TWO_TO_THE_256 = BigInteger.ONE.shiftLeft(256);
   final BigInteger value;
 
   public Word256(final BigInteger b) {
@@ -84,6 +83,11 @@ public class Word256 implements Word {
   @Override
   public boolean is63Bit() {
     return false;
+  }
+
+  @Override
+  public int numBytes() {
+    return (value.bitLength() + 7) / 8;
   }
 
   @Override
@@ -175,6 +179,11 @@ public class Word256 implements Word {
   public Word multiplyMod(final Word other, final Word mod) {
     if (mod.isZero()) return Word.ZERO; // EVM semantics
     return new Word256(value.multiply(other.as256Bit().value).mod(mod.as256Bit().value));
+  }
+
+  @Override
+  public Word modPow(final Word exponent) {
+    return new Word256(value.modPow(exponent.as256Bit().value, TWO_TO_THE_256));
   }
 
   @Override
