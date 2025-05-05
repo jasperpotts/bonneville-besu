@@ -616,6 +616,25 @@ class WordTest {
 
   // TODO Need more AND tests.
 
+  /*************************************************************************
+   * Tests for NOT
+   ************************************************************************/
+
+  @Test
+  void notZero() {
+    assertThat(Word.ZERO.not()).isEqualTo(Word.MAX);
+  }
+
+  @Test
+  void notOne() {
+      assertThat(Word.ONE.not()).isEqualTo(Word.MAX.subtract(Word.ONE));
+  }
+
+  @Test
+  void notMax() {
+      assertThat(Word.MAX.not()).isEqualTo(Word.ZERO);
+  }
+
   private static Stream<Arguments> differentValues() {
     return Stream.of(
         Arguments.of(Word.ZERO, Word.ONE),

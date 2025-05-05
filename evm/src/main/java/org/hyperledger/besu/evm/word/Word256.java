@@ -208,7 +208,7 @@ public class Word256 implements Word {
 
   @Override
   public Word not() {
-    return new Word256(value.not());
+    return new Word256(value.not().and(MASK_256_BITS));
   }
 
   @Override
