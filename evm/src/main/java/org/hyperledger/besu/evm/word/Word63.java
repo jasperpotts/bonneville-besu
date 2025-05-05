@@ -274,7 +274,7 @@ public class Word63 implements Word {
 
   @Override
   public Word not() {
-    return new Word63(~this.value);
+    return as256Bit().not();
   }
 
   @Override

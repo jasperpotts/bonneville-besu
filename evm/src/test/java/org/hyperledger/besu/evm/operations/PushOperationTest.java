@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import org.hyperledger.besu.evm.word.Word;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,14 +47,14 @@ class PushOperationTest {
 
     final var frame = new TestMessageFrameBuilder().build();
     final var result = PushOperation.staticOperation(frame, code, 0, byteLength);
-    final var stackValue = frame.stack().popUnsafe().as256Bit().asBigInteger();
+    final var stackValue = frame.stack().popUnsafe();
 
     System.out.println("Code: " + Arrays.toString(code));
     System.out.println("Byte length: " + byteLength);
     System.out.println("Bytes: 0x" + toHexString(bytes));
     System.out.println("Expected: 0x" + expected.toString(16));
-    System.out.println("Stack value: 0x" + stackValue.toString(16));
-    assertThat(stackValue).isEqualTo(expected);
+    System.out.println("Stack value: 0x" + stackValue.toHexString());
+    assertThat(stackValue).isEqualTo(Word.of(expected));
     assertThat(result.getGasCost()).isEqualTo(3);
     assertThat(result.getHaltReason()).isNull();
     assertThat(result.getPcIncrement()).isEqualTo(1);
