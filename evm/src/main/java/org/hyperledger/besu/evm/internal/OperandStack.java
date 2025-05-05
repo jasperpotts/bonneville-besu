@@ -57,26 +57,4 @@ public class OperandStack extends FlexStack<Word> {
       return unsigned;
     }
   }
-
-  /**
-   * Push signed operand. Takes a signed biginteger and pushes it to the stack as an unsigned value
-   * with two's complement format.
-   *
-   * @param value the value
-   */
-  public final void pushSigned(final BigInteger value) {
-    if (value.signum() < 0) {
-      // Step 2: Get the two's complement byte array
-      byte[] twosComplementBytes = value.toByteArray();
-      // Step 3: Ensure the byte array is 32 bytes (256 bits)
-      byte[] paddedBytes = new byte[32];
-      Arrays.fill(paddedBytes, (byte) 0xFF);
-      int start = 32 - twosComplementBytes.length;
-      System.arraycopy(twosComplementBytes, 0, paddedBytes, start, twosComplementBytes.length);
-      // Step 4: push
-      push(new Word256(new BigInteger(1, paddedBytes)));
-    } else {
-      push(new Word256(value));
-    }
-  }
 }

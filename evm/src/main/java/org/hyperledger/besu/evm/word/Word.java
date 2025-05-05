@@ -149,7 +149,7 @@ public interface Word {
     }
 
     // We have to use a 256-bit word.
-    return new Word256(new BigInteger(1, bytes));
+    return new Word256(new BigInteger(1, bytes).and(MASK_256_BITS));
   }
 
   static Word ofByteString(final String byteString) {

@@ -21,7 +21,7 @@ public class Word256 implements Word {
   final BigInteger value;
 
   public Word256(final BigInteger b) {
-    this.value = b.and(MASK_256_BITS);
+    this.value = b;
   }
 
   @Override
@@ -121,17 +121,17 @@ public class Word256 implements Word {
 
   @Override
   public Word add(final Word other) {
-    return new Word256(value.add(other.as256Bit().value));
+    return new Word256(value.add(other.as256Bit().value).and(MASK_256_BITS));
   }
 
   @Override
   public Word subtract(final Word other) {
-    return new Word256(value.subtract(other.as256Bit().value));
+    return new Word256(value.subtract(other.as256Bit().value).and(MASK_256_BITS));
   }
 
   @Override
   public Word multiply(final Word other) {
-    return new Word256(value.multiply(other.as256Bit().value));
+    return new Word256(value.multiply(other.as256Bit().value).and(MASK_256_BITS));
   }
 
   @Override
@@ -177,18 +177,18 @@ public class Word256 implements Word {
   @Override
   public Word addMod(final Word other, final Word mod) {
     if (mod.isZero()) return Word.ZERO; // EVM semantics
-    return new Word256(value.add(other.as256Bit().value).mod(mod.as256Bit().value));
+    return new Word256(value.add(other.as256Bit().value).mod(mod.as256Bit().value).and(MASK_256_BITS));
   }
 
   @Override
   public Word multiplyMod(final Word other, final Word mod) {
     if (mod.isZero()) return Word.ZERO; // EVM semantics
-    return new Word256(value.multiply(other.as256Bit().value).mod(mod.as256Bit().value));
+    return new Word256(value.multiply(other.as256Bit().value).mod(mod.as256Bit().value).and(MASK_256_BITS));
   }
 
   @Override
   public Word modPow(final Word exponent) {
-    return new Word256(value.modPow(exponent.as256Bit().value, TWO_TO_THE_256));
+    return new Word256(value.modPow(exponent.as256Bit().value, TWO_TO_THE_256).and(MASK_256_BITS));
   }
 
   @Override
@@ -213,7 +213,7 @@ public class Word256 implements Word {
 
   @Override
   public Word shiftLeft(final int shift) {
-    return new Word256(value.shiftLeft(shift));
+    return new Word256(value.shiftLeft(shift).and(MASK_256_BITS));
   }
 
   @Override

@@ -549,37 +549,6 @@ public class MessageFrame {
   }
 
   /**
-   * Pushes the corresponding item onto the top of the stack
-   *
-   * @param value The value to push onto the stack.
-   */
-  public void pushStackItem(final BigInteger value) {
-    stack.push(new Word256(value));
-  }
-
-  /**
-   * Sets the stack item at the specified offset from the top of the stack to the value
-   *
-   * @param offset The item's position relative to the top of the stack
-   * @param value The value to set the stack item to
-   * @throws IllegalStateException if the stack is too small
-   */
-  public void setStackItem(final int offset, final Bytes value) {
-    stack.set(offset, Word.of(value.toArrayUnsafe()));
-  }
-
-  /**
-   * Sets the stack item at the specified offset from the top of the stack to the value
-   *
-   * @param offset The item's position relative to the top of the stack
-   * @param value The value to set the stack item to
-   * @throws IllegalStateException if the stack is too small
-   */
-  public void setStackItem(final int offset, final BigInteger value) {
-    stack.set(offset, new Word256(value));
-  }
-
-  /**
    * Return the current stack size.
    *
    * @return The current stack size

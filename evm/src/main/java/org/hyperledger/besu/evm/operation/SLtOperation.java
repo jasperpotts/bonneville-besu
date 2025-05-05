@@ -17,6 +17,7 @@ package org.hyperledger.besu.evm.operation;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
+import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
@@ -55,9 +56,9 @@ public class SLtOperation extends AbstractFixedCostOperation {
     final BigInteger value0 = stack.popUnsafeSigned();
     final BigInteger value1 = stack.popUnsafeSigned();
 
-    final BigInteger result = (value0.compareTo(value1) < 0 ? BigInteger.ONE : BigInteger.ZERO);
+    final Word result = (value0.compareTo(value1) < 0 ? Word.ONE : Word.ZERO);
 
-    stack.pushUnsafe(new Word256(result));
+    stack.pushUnsafe(result);
 
     return sltSuccess;
   }

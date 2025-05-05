@@ -51,47 +51,4 @@ class OperandStackTest {
     // Assert the signed value remains the same
     assertEquals(unsignedValue, signedValue);
   }
-
-  @Test
-  void testPushSigneSimple() {
-    final int maxSize = 1024;
-    OperandStack stack = new OperandStack(maxSize);
-
-    // Push a negative signed value
-    BigInteger signedValue = BigInteger.valueOf(-2);
-    stack.pushSigned(signedValue);
-    stack.pushSigned(signedValue); // push second time so we can pop twice
-    System.out.println("Signed value: " + HexFormat.of().formatHex(signedValue.toByteArray()));
-
-    // Pop and convert to unsigned
-    BigInteger unsignedValue = stack.popUnsafe().as256Bit().asBigInteger();
-    System.out.println("Unsigned value: " + HexFormat.of().formatHex(unsignedValue.toByteArray()));
-
-    BigInteger readSigned = stack.popUnsafeSigned();
-    System.out.println("Read signed value: " + HexFormat.of().formatHex(readSigned.toByteArray()));
-
-    // Assert the unsigned value is the two's complement representation
-    assertEquals(signedValue.add(BigInteger.ONE.shiftLeft(256)), unsignedValue);
-
-    assertEquals(signedValue, readSigned);
-  }
-
-  @Test
-  void testPushSigned() {
-    final int maxSize = 1024;
-    OperandStack stack = new OperandStack(maxSize);
-
-    // Push a negative signed value
-    BigInteger signedValue = BigInteger.valueOf(-123);
-    stack.pushSigned(signedValue);
-    stack.pushSigned(signedValue); // push second time so we can pop twice
-
-    // Pop and convert to unsigned
-    BigInteger unsignedValue = stack.popUnsafe().as256Bit().asBigInteger();
-
-    // Assert the unsigned value is the two's complement representation
-    assertEquals(signedValue.add(BigInteger.ONE.shiftLeft(256)), unsignedValue);
-
-    assertEquals(signedValue, stack.popUnsafeSigned());
-  }
 }

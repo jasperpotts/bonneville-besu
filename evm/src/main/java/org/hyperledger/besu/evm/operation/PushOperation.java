@@ -14,6 +14,7 @@
  */
 package org.hyperledger.besu.evm.operation;
 
+import java.util.Arrays;
 import org.hyperledger.besu.evm.EVM;
 import org.hyperledger.besu.evm.frame.MessageFrame;
 import org.hyperledger.besu.evm.gascalculator.GasCalculator;
@@ -21,6 +22,7 @@ import org.hyperledger.besu.evm.word.Word;
 import org.hyperledger.besu.evm.word.Word256;
 
 import java.math.BigInteger;
+import org.hyperledger.besu.evm.word.Word63;
 
 /** The Push operation. */
 public class PushOperation extends AbstractFixedCostOperation {
@@ -64,7 +66,7 @@ public class PushOperation extends AbstractFixedCostOperation {
    * @param frame the frame
    * @param code the code
    * @param pc the pc
-   * @param pushSize the push size
+   * @param pushSize the push size, from 1 to 32.
    * @return the operation result
    */
   public static OperationResult staticOperation(
@@ -73,13 +75,25 @@ public class PushOperation extends AbstractFixedCostOperation {
     final var stack = frame.stack();
     int copyStart = pc + 1;
 
+
     if (code.length <= copyStart) {
       stack.pushUnsafe(Word.ZERO);
     } else {
       final int copyLength = Math.min(pushSize, code.length - pc - 1);
-      final var bigInt = new BigInteger(1, code, copyStart, copyLength);
-      stack.pushUnsafe(new Word256(bigInt));
+      if (copyLength < 8) {
+        // We can actually store the value in a 63-bit word!
+        long result = 0;
+        for (int i = copyStart; i < copyStart + copyLength; i++) {
+          byte b = code[i];
+          result = (result << 8) | (b & 0xFF);
+        }
+        stack.pushUnsafe(new Word63(result));
+      } else {
+        final var bigInt = new BigInteger(1, code, copyStart, copyLength);
+        stack.pushUnsafe(new Word256(bigInt));
+      }
     }
+
     frame.setPC(pc + pushSize);
     return pushSuccess;
   }

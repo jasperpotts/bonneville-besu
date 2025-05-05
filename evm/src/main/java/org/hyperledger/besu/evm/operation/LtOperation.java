@@ -56,8 +56,8 @@ public class LtOperation extends AbstractFixedCostOperation {
     final Word value0 = stack.popUnsafe();
     final Word value1 = stack.popUnsafe();
 
-    final BigInteger result = value0.isLessThan(value1) ? BigInteger.ONE : BigInteger.ZERO;
-    stack.pushUnsafe(new Word256(result));
+    final Word result = value0.isLessThan(value1) ? Word.ONE : Word.ZERO;
+    stack.pushUnsafe(result);
 
     return ltSuccess;
   }
